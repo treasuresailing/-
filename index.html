@@ -3,504 +3,140 @@
 <head>
   <meta charset="UTF-8">
   <title>합리적 선택 탐험대 2.0</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- html2canvas 라이브러리 (화면을 이미지로 캡처하여 저장하는 모듈) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <!-- 가독성이 높은 둥근 한글 폰트 적용 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=DungGeunMo&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Gaegu', sans-serif;
-      font-size: 1.25rem;
-    }
-    .pixel-font {
-      font-family: 'DungGeunMo', monospace;
-    }
-    /* 12줄의 전체 표가 스크롤 없이 한눈에 들어올 수 있도록 압축적인 표 레이아웃 설계 */
-    .compact-table th, .compact-table td {
-      padding: 4px 6px;
-      line-height: 1.15;
-      font-size: 0.85rem;
-    }
+    body { font-family: 'Gaegu', sans-serif; font-size: 1.1rem; }
+    .pixel-font { font-family: 'DungGeunMo', monospace; }
+    .compact-table td, .compact-table th { padding: 2px 4px; font-size: 0.7rem; line-height: 1; }
   </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 min-h-screen flex flex-col items-center justify-center p-2 md:p-4">
+<body class="bg-indigo-50 min-h-screen flex flex-col items-center justify-center p-2">
 
-  <!-- 상단 음소거 제어 버튼 -->
-  <div class="fixed top-4 right-4 z-50">
-    <button id="muteBtn" class="bg-white hover:bg-purple-100 text-purple-700 font-bold py-1.5 px-3 rounded-full shadow-lg flex items-center gap-1.5 border-2 border-purple-300 transition-all cursor-pointer text-sm">
-      <span id="muteIcon">🔊</span> <span id="muteText">소리 켬</span>
-    </button>
-  </div>
-
-  <!-- 메인 보드 컨테이너 -->
-  <main id="gameWrapper" class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border-4 border-purple-400 p-4 md:p-6 relative overflow-hidden">
+  <main id="gameWrapper" class="w-full max-w-lg bg-white rounded-3xl shadow-2xl border-4 border-purple-300 p-4 relative">
     
-    <!-- [1] 시작 화면 (개인정보 입력칸 없이 바로 시작) -->
-    <div id="screenStart" class="space-y-6 text-center py-6">
-      <div class="flex justify-center">
-        <!-- 핑크 주얼리 도트 아이콘 -->
-        <svg width="110" height="110" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="animate-bounce">
-          <path d="M4 2H12V3H14V4H15V6H14V8H12V10H10V12H9V14H7V12H6V10H4V8H2V6H1V4H2V3H4V2Z" fill="#C084FC"></path>
-          <path d="M5 3H11V4H13V5H14V6H13V7H11V9H9V11H7V9H5V7H3V6H2V5H4V4H5V3Z" fill="#F472B6"></path>
-          <path d="M5 4H8V7H5V4Z" fill="#FDF2F8"></path>
-        </svg>
+    <!-- [1] 시작 화면 -->
+    <div id="screenStart" class="text-center py-4">
+      <h1 class="text-3xl font-extrabold text-purple-600 pixel-font mb-4">합리적 선택 탐험대 2.0</h1>
+      <div class="bg-purple-50 p-4 rounded-xl text-sm font-bold text-purple-900 mb-6">
+        "12번의 선택을 통해 최고의 만족감을 찾아라!"<br>
+        타이머가 0초가 되어도 강제로 넘어가지 않으니, 충분히 생각하고 고민한 뒤 선택하세요.
       </div>
-      <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500 tracking-wide pixel-font">
-        합리적 선택 탐험대 2.0
-      </h1>
-      
-      <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-5 text-purple-900 font-bold text-lg md:text-xl leading-relaxed max-w-md mx-auto">
-        🐿️ "안녕! 나는 탐험 대장 다람이야!<br>
-        합리적인 선택이란 <span class="text-pink-600 underline decoration-pink-300 decoration-2">가장 적은 비용으로 가장 큰 만족</span>을 얻는 과정이란다!<br>
-        유혹을 이겨내고 나만의 멋진 탐험 보고서를 완성해 보자!"
-      </div>
-
-      <div class="space-y-4">
-        <p class="text-gray-400 text-xs font-bold">🔒 본 프로그램은 개인정보를 절대로 요구하거나 수집하지 않는 안전한 학습 도구입니다.</p>
-        <button onclick="startGame()" class="w-full max-w-xs bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-extrabold py-3.5 px-6 rounded-2xl shadow-xl hover:shadow-2xl transform active:scale-95 transition-all text-2xl cursor-pointer">
-          탐험 시작하기 🧭
-        </button>
-      </div>
+      <button onclick="startGame()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-extrabold py-3 rounded-xl shadow-lg text-xl">시작하기 🧭</button>
     </div>
 
     <!-- [2] 플레이 화면 -->
-    <div id="screenPlay" class="hidden space-y-4">
-      <div class="grid grid-cols-2 gap-4 bg-purple-950 text-white p-3.5 rounded-2xl font-bold text-center border-2 border-purple-400 shadow-inner">
-        <div class="bg-red-950/40 py-1 rounded-xl">
-          <p class="text-xs text-red-300 font-bold">💰 누적 비용</p>
-          <p id="dashCost" class="text-lg text-red-400">0원</p>
-        </div>
-        <div class="bg-green-950/40 py-1 rounded-xl">
-          <p class="text-xs text-green-300 font-bold">❤️ 누적 만족감</p>
-          <p id="dashSatisfaction" class="text-lg text-green-400">0점</p>
-        </div>
+    <div id="screenPlay" class="hidden space-y-3">
+      <div class="flex justify-between text-xs font-bold text-gray-500">
+        <span id="qTag" class="bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full">분류</span>
+        <span id="timerText" class="text-rose-600">⏱️ 45초</span>
       </div>
-
-      <div class="space-y-1.5">
-        <div class="flex justify-between items-center text-xs font-bold text-gray-500">
-          <span id="playProgressText" class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full">문제 1 / 12</span>
-          <span id="timerText" class="text-rose-500 bg-rose-50 border border-rose-200 px-3 py-1 rounded-full">⏱️ 생각 시간: 45초</span>
-        </div>
-        <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden border border-gray-300 shadow-inner">
-          <div id="progressBar" class="bg-gradient-to-r from-purple-400 to-pink-400 h-full transition-all duration-300" style="width: 8.3%"></div>
-        </div>
+      <h2 id="questionText" class="text-lg font-extrabold text-gray-800 text-center">질문</h2>
+      <div class="grid grid-cols-2 gap-2">
+        <button id="btnA" class="border-2 border-purple-300 p-3 rounded-xl font-bold text-purple-800">A 선택</button>
+        <button id="btnB" class="border-2 border-pink-300 p-3 rounded-xl font-bold text-pink-800">B 선택</button>
       </div>
-
-      <div class="text-center py-5 bg-pink-50 rounded-2xl border-2 border-pink-200">
-        <span id="qTag" class="text-xs font-bold text-pink-500 bg-pink-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">소비 분류</span>
-        <h2 id="questionText" class="text-xl md:text-2xl font-extrabold text-gray-800 mt-2 px-4 leading-normal">질문 로딩 중...</h2>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <button id="btnOptionA" class="bg-white hover:bg-purple-50 border-4 border-purple-400 p-5 rounded-2xl text-lg font-extrabold text-purple-700 shadow-md hover:shadow-lg transform active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer">
-          <span class="text-4xl" id="iconOptionA">🍜</span>
-          <span id="textOptionA">선택지 A</span>
-          <span id="hintOptionA" class="text-xs text-purple-400 font-bold bg-purple-50 px-2.5 py-0.5 rounded-full">비용 & 만족도</span>
-        </button>
-        <button id="btnOptionB" class="bg-white hover:bg-pink-50 border-4 border-pink-400 text-pink-700 font-extrabold p-5 rounded-2xl text-lg font-extrabold text-pink-700 shadow-md hover:shadow-lg transform active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer">
-          <span class="text-4xl" id="iconOptionB">🔥</span>
-          <span id="textOptionB">선택지 B</span>
-          <span id="hintOptionB" class="text-xs text-pink-400 font-bold bg-pink-50 px-2.5 py-0.5 rounded-full">비용 & 만족도</span>
-        </button>
-      </div>
-
-      <!-- 생각 타이머 종료 후 안내 문장 (강제 이동 차단) -->
-      <p id="waitMsg" class="hidden text-center text-rose-500 font-bold animate-pulse text-sm py-1.5 bg-rose-50 border border-rose-100 rounded-xl">
-        💡 제한시간이 모두 지났습니다! 서두르지 말고 친구와 충분히 토론을 해본 뒤 신중하게 원하는 보기를 눌러주세요!
-      </p>
+      <p id="waitMsg" class="hidden text-center text-rose-500 text-xs font-bold animate-pulse">💡 충분히 생각했나요? 선택지를 눌러주세요!</p>
     </div>
 
-    <!-- [3] 돌발 상황 발생 연출 화면 -->
-    <div id="screenIssue" class="hidden text-center space-y-5 animate-fade-in py-2">
-      <h2 class="text-3xl font-extrabold text-amber-500 flex items-center justify-center gap-1.5 animate-bounce">
-        🚨 돌발 변수 발생! 🚨
-      </h2>
-
-      <div class="bg-gray-50 border border-gray-200 p-3 rounded-xl max-w-sm mx-auto">
-        <p id="issueChoiceName" class="text-lg font-extrabold text-purple-700">고른 항목</p>
-        <div class="flex justify-around text-xs font-bold text-gray-600 mt-1.5">
-          <span>기본 비용: <mark id="issueBaseCost" class="bg-red-50 text-red-600 px-1">0원</mark></span>
-          <span>기본 만족감: <mark id="issueBaseSat" class="bg-green-50 text-green-600 px-1">0점</mark></span>
-        </div>
+    <!-- [3] 돌발 상황 화면 -->
+    <div id="screenIssue" class="hidden text-center py-4">
+      <h2 class="text-xl font-extrabold text-amber-500">🚨 돌발 변수!</h2>
+      <p id="issueDesc" class="text-sm font-bold my-3">상황 설명</p>
+      <div class="flex justify-center gap-4 text-xs font-bold mb-4">
+        <span id="issueCost" class="text-red-600">비용: 0</span>
+        <span id="issueSat" class="text-blue-600">만족감: 0</span>
       </div>
-
-      <div class="bg-amber-50/80 border-4 border-amber-300 p-5 rounded-2xl max-w-md mx-auto shadow-inner relative">
-        <div class="absolute -top-6 left-6 text-3xl">🐿️</div>
-        <p id="issueDescription" class="text-left text-base font-bold text-amber-900 leading-relaxed pt-1">피드백 설명</p>
-        <div class="flex justify-center gap-3 font-extrabold text-sm mt-3">
-          <div id="issueCostBox" class="text-red-600 bg-white px-3.5 py-1.5 rounded-lg shadow border border-red-200">추가 비용</div>
-          <div id="issueSatBox" class="text-blue-600 bg-white px-3.5 py-1.5 rounded-lg shadow border border-blue-200">만족감 변화</div>
-        </div>
-      </div>
-
-      <button id="btnIssueConfirm" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold py-2.5 px-8 rounded-xl shadow-md text-lg cursor-pointer transition-all transform active:scale-95">
-        다음 단계로 전진! 🏃💨
-      </button>
+      <button id="btnConfirm" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-bold">확인</button>
     </div>
 
-    <!-- [4] 최종 결산 보고서 화면 (스크롤 없는 고정식 캡처 영역 설정) -->
-    <div id="screenResult" class="hidden space-y-4">
-      
-      <!-- 캡처될 독립형 영역 설정 (배경색 흰색 및 패딩 추가) -->
-      <div id="report-capture-area" class="p-4 bg-white border-4 border-purple-200 rounded-2xl">
-        <h2 class="text-2xl font-extrabold text-center text-purple-700 mb-3 tracking-wider pixel-font">🧭 나의 합리적 선택 성찰 보고서 🧭</h2>
-        
-        <!-- 스크롤 없는 컴팩트 데이터 표 -->
-        <div class="overflow-hidden rounded-xl border border-purple-200 shadow-sm mb-3">
-          <table class="compact-table w-full text-left border-collapse bg-white">
-            <thead class="bg-purple-100 text-purple-800 font-bold text-xs border-b border-purple-200">
-              <tr>
-                <th class="p-2 border-r border-purple-200">선택 상황</th>
-                <th class="p-2 border-r border-purple-200">내가 내린 결정</th>
-                <th class="p-2 text-right border-r border-purple-200">최종 비용</th>
-                <th class="p-2 text-right">최종 만족감</th>
-              </tr>
-            </thead>
-            <tbody id="resultTableBody" class="divide-y divide-gray-100 font-bold text-gray-700">
-              <!-- JS로 12줄 컴팩트하게 밀어넣음 -->
-            </tbody>
-          </table>
-        </div>
-
-        <!-- 최종 점수 누적 판넬 -->
-        <div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-600 to-pink-500 text-white p-3.5 rounded-2xl text-center font-extrabold shadow-md mb-3">
-          <div class="border-r border-white/20">
-            <p class="text-[10px] text-purple-200">💰 총 지불 비용</p>
-            <p id="resultTotalCost" class="text-xl">0원</p>
-          </div>
-          <div>
-            <p class="text-[10px] text-pink-200">❤️ 총 획득 만족감</p>
-            <p id="resultTotalSat" class="text-xl">0점</p>
-          </div>
-        </div>
-
-        <!-- 성향 분석 결과 박스 -->
-        <div class="bg-purple-50 border-2 border-purple-200 p-3.5 rounded-xl space-y-1 text-sm">
-          <h3 class="font-extrabold text-purple-800">📊 다람 대장의 성향 진단</h3>
-          <p id="resultAnalysisText" class="text-gray-800 leading-snug font-semibold">진단 데이터 계산 중...</p>
+    <!-- [4] 결과 화면 -->
+    <div id="screenResult" class="hidden space-y-3">
+      <div id="report-capture-area" class="p-2 bg-white rounded-xl border border-purple-200">
+        <h2 class="text-center font-extrabold text-purple-700 text-sm">탐험 결과 보고서</h2>
+        <table class="compact-table w-full border-collapse mt-2">
+          <thead><tr class="bg-purple-100 text-xs text-purple-800"><th>상황</th><th>선택</th><th>비용</th><th>만족</th></tr></thead>
+          <tbody id="resultTableBody"></tbody>
+        </table>
+        <div class="mt-2 text-center font-extrabold text-sm">
+          총 비용: <span id="finalCost" class="text-red-600">0</span>원 | 총 만족감: <span id="finalSat" class="text-blue-600">0</span>점
         </div>
       </div>
-
-      <!-- 성찰 기록장 (이 영역은 캡처 범위 바깥에 배치하여 아이들이 텍스트 입력하기 편리하도록 구성) -->
-      <div class="bg-yellow-50 border-2 border-yellow-200 p-4 rounded-xl space-y-2">
-        <p class="text-yellow-800 font-bold text-sm">✍️ 오늘의 성찰 일지</p>
-        <p class="text-gray-700 text-sm font-semibold">Q. 모든 탐험이 끝났습니다. 오늘 여러분이 배운 <span class="text-purple-700">&#34;합리적 선택&#34;</span>이란 과연 무엇인가요?</p>
-        <textarea id="textReflection" rows="2" placeholder="예시: 유행이나 충동에 휩쓸리지 않고, 내가 가진 돈 안에서 나에게 가장 쓸모 있고 행복을 주는 물건을 골라내는 깊은 고민 과정입니다." class="w-full p-2.5 rounded-lg border border-yellow-200 focus:border-yellow-400 bg-white outline-none text-sm font-semibold text-gray-800"></textarea>
-      </div>
-
-      <!-- 저장 버튼 및 패들렛 안내판 -->
-      <div class="space-y-3">
-        <button id="btnDownload" class="w-full bg-green-500 hover:bg-green-600 text-white font-extrabold py-4 px-6 rounded-2xl shadow-md text-xl transform active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2">
-          📥 보고서 이미지 파일로 저장하기
-        </button>
-        <div class="bg-pink-50 border border-pink-200 text-pink-700 text-center py-2.5 px-4 rounded-2xl font-bold text-sm leading-relaxed animate-pulse">
-          📸 <strong>미션 완료!</strong> 저장된 보고서 이미지 파일을<br>우리 반 학급 <strong>패들렛(Padlet)</strong>에 첨부하고 나의 생각을 함께 공유하세요!
-        </div>
-      </div>
+      <button id="btnDownload" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl">📥 보고서 이미지 저장</button>
+      <p class="text-center text-[10px] text-gray-500">저장된 이미지를 패들렛에 올리고 성찰을 적으세요!</p>
     </div>
-
   </main>
 
   <script>
-    // --- 핵심 질문 및 교육 콘텐츠 12개 셋업 ---
-    let currentQuestionIdx = 0;
-    let accumulatedCost = 0;
-    let accumulatedSatisfaction = 0;
-    let timerInterval = null;
-    let timeLeft = 45; // 넉넉하게 늘어난 생각 시간 45초
-    let isMuted = false;
-    let chosenLog = [];
-
+    let currentIdx = 0, cost = 0, sat = 0, timer = null, timeLeft = 45;
     const quizData = [
-      {
-        question: "Q1. 오늘 학원 가기 전 저녁 메뉴로 고를 음식은?",
-        tag: "만족스러운 소비",
-        options: {
-          A: { name: "짜장면", icon: "🍜", cost: 7000, sat: 100, issue: "음식이 늦게 나오는 바람에 학원 버스를 놓쳐 지각했어요!", extraCost: 0, extraSat: -10 },
-          B: { name: "짬뽕", icon: "🔥", cost: 9000, sat: 120, issue: "매콤한 국물이 하얀 옷에 튀어 얼룩제거제를 샀어요ㅠㅠ", extraCost: 2000, extraSat: 0 }
-        }
-      },
-      {
-        question: "Q2. 편의점에서 과자 2+1 행사용 과자를 골라볼까요?",
-        tag: "충동 소비",
-        options: {
-          A: { name: "꼭 필요한 1개만 구입", icon: "🍪", cost: 1500, sat: 80, issue: "돈을 낭비하지 않고 계획적으로 절약한 스스로가 멋져요!", extraCost: 0, extraSat: 20 },
-          B: { name: "행사 세트로 3개 구입", icon: "🍪🍪🍪", cost: 3000, sat: 110, issue: "행사라 샀지만 다 먹지 못하고 결국 버리게 되었습니다.", extraCost: 0, extraSat: -40 }
-        }
-      },
-      {
-        question: "Q3. 문방구 앞, 친구들에게 엄청나게 유행하는 이쁜 필통!",
-        tag: "모방 소비",
-        options: {
-          A: { name: "옛날 필통 계속 쓰기", icon: "✏️", cost: 0, sat: 90, issue: "불필요한 지출을 참고 지구 환경을 보호해 보람이 생겼어요!", extraCost: 0, extraSat: 30 },
-          B: { name: "유행 필통 새로 사기", icon: "✨", cost: 15000, sat: 130, issue: "한 달 만에 더 멋진 필통이 유행해 또 사고 싶어졌어요.", extraCost: 0, extraSat: -60 }
-        }
-      },
-      {
-        question: "Q4. 고장 난 나의 인라인 스케이트, 어떻게 할까요?",
-        tag: "합리적 소비",
-        options: {
-          A: { name: "수리점에 맡겨 고쳐 타기", icon: "🔧", cost: 30000, sat: 100, issue: "바퀴 축에 기름을 칠해 새것처럼 쌩쌩 부드럽게 잘 나갑니다!", extraCost: 0, extraSat: 50 },
-          B: { name: "멋있는 새 제품 새로 사기", icon: "⛸️", cost: 50000, sat: 100, issue: "새 구두 가죽이 너무 딱딱해서 양 발뒤꿈치가 심하게 쓸렸어요.", extraCost: 0, extraSat: -150 }
-        }
-      },
-      {
-        question: "Q5. 인기 키즈 유튜버가 화려하게 선전하는 로봇 장난감!",
-        tag: "모방 소비",
-        options: {
-          A: { name: "참아두고 구매 보류하기", icon: "🚫", cost: 0, sat: 70, issue: "광고의 자극적인 유혹을 어른스럽게 이겨낸 훌륭한 자제력!", extraCost: 0, extraSat: 50 },
-          B: { name: "엄마를 졸라 바로 사기", icon: "🤖", cost: 45000, sat: 150, issue: "영상보다 직접 만져보니 놀이가 너무 심심해서 금방 실망했어요.", extraCost: 0, extraSat: -80 }
-        }
-      },
-      {
-        question: "Q6. 대형 마트 계산대 대기선 옆, 눈에 밟히는 달콤한 젤리!",
-        tag: "충동 소비",
-        options: {
-          A: { name: "계획에 없던 것이니 참기", icon: "🛒", cost: 0, sat: 60, issue: "불필요한 군것질 비용을 깔끔하게 차단해 내어 개운합니다!", extraCost: 0, extraSat: 40 },
-          B: { name: "망설임 없이 장바구니 넣기", icon: "🍬", cost: 2500, sat: 100, issue: "맛있게 먹었지만 저녁밥을 남겨 부모님께 꾸중을 들었습니다.", extraCost: 0, extraSat: -30 }
-        }
-      },
-      {
-        question: "Q7. 무더운 여름날 더위를 해소하기 위한 나의 소비는?",
-        tag: "과소비 요인",
-        options: {
-          A: { name: "에어컨 하루 종일 틀어두기", icon: "❄️", cost: 80000, sat: 120, issue: "매우 시원했지만 다음 달 과다하게 날아온 전기 고지서!", extraCost: 30000, extraSat: 0 },
-          B: { name: "선풍기 회전 시원한 물 샤워", icon: "🚿", cost: 5000, sat: 90, issue: "지혜롭게 절약하고 건강하게 여름 더위를 극복했어요!", extraCost: 0, extraSat: 20 }
-        }
-      },
-      {
-        question: "Q8. 주말 휴일, 가족과 힐링하러 갈 멋진 목적지는?",
-        tag: "선택의 만족감",
-        options: {
-          A: { name: "맑은 숲속 가득한 푸른 산", icon: "⛰️", cost: 5000, sat: 100, issue: "상쾌한 피톤치드를 듬뿍 마셔 정신이 맑아지고 튼튼해져요!", extraCost: 0, extraSat: 20 },
-          B: { name: "가슴이 뻥 뚫리는 푸른 바다", icon: "🌊", cost: 15000, sat: 130, issue: "풍경은 멋졌지만 수많은 인파 속 교통체증 때문에 지쳤어요.", extraCost: 0, extraSat: -20 }
-        }
-      },
-      {
-        question: "Q9. 학교 체육 시간에 신을 운동화, 무엇을 고를까요?",
-        tag: "합리적 소비",
-        options: {
-          A: { name: "가볍고 튼튼한 가성비 국산화", icon: "👟", cost: 35000, sat: 100, issue: "쿠션이 너무 푹신하고 발이 편해서 달리기 1등을 달성했어요!", extraCost: 0, extraSat: 40 },
-          B: { name: "비싸고 유행하는 수입 한정판", icon: "👟💎", cost: 120000, sat: 150, issue: "친구가 신발을 밟을까 봐 체육 시간에 제대로 뛰지 못했어요.", extraCost: 0, extraSat: -100 }
-        }
-      },
-      {
-        question: "Q10. 운동장 놀이 후 목마를 때 1+1 탄산음료 행사는?",
-        tag: "충동 소비",
-        options: {
-          A: { name: "저렴하고 건강한 생수 구입", icon: "💧", cost: 800, sat: 90, issue: "딱 필요한 수분만 갈증 없이 깨끗하게 채워 몸이 가볍습니다!", extraCost: 0, extraSat: 10 },
-          B: { name: "1+1의 화려한 탄산음료", icon: "🥤🥤", cost: 2000, sat: 110, issue: "억지로 두 병을 다 마시는 바람에 밤늦게까지 속이 부글거렸어요.", extraCost: 0, extraSat: -50 }
-        }
-      },
-      {
-        question: "Q11. 정말 보고 싶던 영화가 개봉했을 때 관람 방법은?",
-        tag: "만족스러운 소비",
-        options: {
-          A: { name: "스크린 사운드의 영화관 감상", icon: "🎬", cost: 15000, sat: 100, issue: "영화가 끝나고 감독님과 주연 배우가 무대인사를 와 대박!", extraCost: 0, extraSat: 150 },
-          B: { name: "집 침대 누워 편안히 TV 관람", icon: "🏠", cost: 0, sat: 90, issue: "너무 조용하고 편해서 중간에 나도 모르게 잠들고 말았어요.", extraCost: 0, extraSat: -30 }
-        }
-      },
-      {
-        question: "Q12. 평생 신나게 탈 전용 자전거를 선택해 볼까요?",
-        tag: "합리적 소비",
-        options: {
-          A: { name: "깨끗하고 저렴한 중고 사기", icon: "🚲", cost: 50000, sat: 110, issue: "절약한 돈으로 정말 머리를 안전하게 지킬 고급 헬멧을 장만!", extraCost: 0, extraSat: 50 },
-          B: { name: "번쩍거리는 최신 신상 자전거", icon: "🚲✨", cost: 250000, sat: 160, issue: "자전거를 도둑맞을까 봐 밖에 주차할 때마다 늘 조마조마해요.", extraCost: 0, extraSat: -60 }
-        }
-      }
+      {q:"저녁 메뉴", tag:"만족소비", A:{n:"짜장면",c:7000,s:120,is:"늦게 나옴",ec:0,es:-20}, B:{n:"짬뽕",c:9000,s:150,is:"국물 튐",ec:3000,es:-30}},
+      {q:"간식 선택", tag:"충동소비", A:{n:"사탕",c:1000,s:80,is:"머리에 붙음",ec:5000,es:-20}, B:{n:"초콜릿",c:2000,s:100,is:"치과 행",ec:10000,es:-50}},
+      {q:"계절 선호", tag:"과소비", A:{n:"여름(에어컨)",c:50000,s:150,is:"감기 걸림",ec:10000,es:-50}, B:{n:"겨울(여행)",c:100000,s:200,is:"가족 여행",ec:0,es:50}},
+      {q:"풍경 선호", tag:"만족소비", A:{n:"산",c:0,s:100,is:"쾌적함",ec:0,es:20}, B:{n:"바다",c:5000,s:120,is:"교통체증",ec:10000,es:-30}},
+      {q:"스케이트 수리", tag:"합리소비", A:{n:"고쳐타기",c:30000,s:150,is:"잘 나감",ec:0,es:50}, B:{n:"새것구매",c:50000,s:100,is:"뒤꿈치 까짐",ec:0,es:-100}},
+      {q:"영화 보기", tag:"만족소비", A:{n:"영화관",c:15000,s:150,is:"배우 등장",ec:0,es:100}, B:{n:"집(OTT)",c:0,s:80,is:"배달 과소비",ec:20000,es:-40}},
+      {q:"문구점 필통", tag:"모방소비", A:{n:"기존필통",c:0,s:100,is:"검소함",ec:0,es:20}, B:{n:"유행필통",c:15000,s:120,is:"곧 유행지남",ec:5000,es:-50}},
+      {q:"편의점 과자", tag:"충동소비", A:{n:"1봉지",c:1500,s:80,is:"알뜰함",ec:0,es:30}, B:{n:"2+1행사",c:3000,s:90,is:"남아서 버림",ec:0,es:-40}},
+      {q:"운동화", tag:"합리소비", A:{n:"국산화",c:35000,s:130,is:"발이 편함",ec:0,es:30}, B:{n:"한정판",c:120000,s:140,is:"친구들 질투",ec:0,es:-80}},
+      {q:"놀이 후 음료", tag:"충동소비", A:{n:"생수",c:800,s:100,is:"갈증 해소",ec:0,es:20}, B:{n:"탄산음료",c:2000,s:90,is:"배탈",ec:3000,es:-30}},
+      {q:"자전거", tag:"합리소비", A:{n:"중고",c:50000,s:140,is:"헬멧 구매",ec:0,es:50}, B:{n:"신상",c:250000,s:150,is:"도난 불안",ec:20000,es:-70}},
+      {q:"책상 정리", tag:"합리소비", A:{n:"바구니",c:2000,s:110,is:"깔끔함",ec:0,es:20}, B:{n:"디자인함",c:25000,s:120,is:"손목 아픔",ec:5000,es:-40}}
     ];
 
-    // --- Web Audio API 효과음 사운드 카드 탑재 ---
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playTone(freq, type, duration) {
-      if (isMuted) return;
-      try {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {}
-    }
+    let log = [];
 
-    const sound = {
-      click: () => playTone(650, 'sine', 0.1),
-      warn: () => playTone(300, 'sawtooth', 0.12),
-      issue: () => {
-        playTone(400, 'triangle', 0.08);
-        setTimeout(() => playTone(500, 'triangle', 0.08), 80);
-        setTimeout(() => playTone(680, 'triangle', 0.22), 160);
-      },
-      done: () => {
-        playTone(523.25, 'sine', 0.15); 
-        setTimeout(() => playTone(659.25, 'sine', 0.15), 150); 
-        setTimeout(() => playTone(783.99, 'sine', 0.15), 300); 
-        setTimeout(() => playTone(1046.50, 'sine', 0.45), 450); 
-      }
-    };
-
-    document.getElementById('muteBtn').addEventListener('click', () => {
-      isMuted = !isMuted;
-      document.getElementById('muteIcon').innerText = isMuted ? "✕" : "🔊";
-      document.getElementById('muteText').innerText = isMuted ? "소리 꺼짐" : "소리 켬";
-    });
-
-    function startGame() {
-      sound.click();
-      document.getElementById('screenStart').classList.add('hidden');
-      document.getElementById('screenPlay').classList.remove('hidden');
-      loadQ();
-    }
-
-    // --- 질문 업로드 및 타이머 설계 ---
+    function startGame() { document.getElementById('screenStart').classList.add('hidden'); document.getElementById('screenPlay').classList.remove('hidden'); loadQ(); }
+    
     function loadQ() {
-      if(currentQuestionIdx >= quizData.length) return endGame();
-      clearInterval(timerInterval);
-      
-      const currentQuiz = quizData[currentQuestionIdx];
-      document.getElementById('playProgressText').innerText = `문제 ${currentQuestionIdx + 1} / ${quizData.length}`;
-      document.getElementById('progressBar').style.width = `${((currentQuestionIdx + 1) / quizData.length) * 100}%`;
-      document.getElementById('qTag').innerText = currentQuiz.tag;
-      document.getElementById('questionText').innerText = currentQuiz.question;
-      
-      document.getElementById('textOptionA').innerText = currentQuiz.options.A.name;
-      document.getElementById('iconOptionA').innerText = currentQuiz.options.A.icon;
-      document.getElementById('hintOptionA').innerText = `${currentQuiz.options.A.cost.toLocaleString()}원 | 만족도 ${currentQuiz.options.A.sat}`;
-      
-      document.getElementById('textOptionB').innerText = currentQuiz.options.B.name;
-      document.getElementById('iconOptionB').innerText = currentQuiz.options.B.icon;
-      document.getElementById('hintOptionB').innerText = `${currentQuiz.options.B.cost.toLocaleString()}원 | 만족도 ${currentQuiz.options.B.sat}`;
-      
-      timeLeft = 45; // 숙고 타이머 설정
+      if(currentIdx >= quizData.length) return endGame();
+      const d = quizData[currentIdx];
+      document.getElementById('qTag').innerText = d.tag;
+      document.getElementById('questionText').innerText = d.q;
+      document.getElementById('textA').innerText = d.A.n;
+      document.getElementById('textB').innerText = d.B.n;
+      timeLeft = 45;
       document.getElementById('waitMsg').classList.add('hidden');
-      updateTimerUI();
-      
-      timerInterval = setInterval(() => {
+      timer = setInterval(()=>{
         timeLeft--;
-        updateTimerUI();
-        if(timeLeft <= 3 && timeLeft > 0) sound.warn();
-        if(timeLeft <= 0) {
-          clearInterval(timerInterval);
-          document.getElementById('timerText').innerText = "⌛ 숙고 시간 완료";
-          document.getElementById('waitMsg').classList.remove('hidden'); // 대기 안내판 개시
-        }
+        document.getElementById('timerText').innerText = `⏱️ ${timeLeft}초`;
+        if(timeLeft <= 0) { clearInterval(timer); document.getElementById('waitMsg').classList.remove('hidden'); }
       }, 1000);
+      document.getElementById('btnA').onclick = () => select('A');
+      document.getElementById('btnB').onclick = () => select('B');
     }
 
-    function updateTimerUI() {
-      document.getElementById('timerText').innerText = `⏱️ 생각 시간: ${timeLeft}초`;
-    }
-
-    document.getElementById('btnOptionA').addEventListener('click', () => handleChoice('A'));
-    document.getElementById('btnOptionB').addEventListener('click', () => handleChoice('B'));
-
-    function handleChoice(type) {
-      clearInterval(timerInterval);
-      sound.issue();
-      
-      const currentQuiz = quizData[currentQuestionIdx];
-      const selectedOption = currentQuiz.options[type];
-      
-      const finalCost = selectedOption.cost + selectedOption.extraCost;
-      const finalSat = selectedOption.sat + selectedOption.extraSat;
-      
-      accumulatedCost += finalCost;
-      accumulatedSatisfaction += finalSat;
-      
-      chosenLog.push({
-        context: currentQuiz.question.split(". ")[1], // 텍스트만 요약
-        chosen: selectedOption.name,
-        cost: finalCost,
-        sat: finalSat
-      });
-
-      // 돌발상황 이슈 화면 정보 세팅
-      document.getElementById('issueChoiceName').innerText = `${selectedOption.icon} ${selectedOption.name}`;
-      document.getElementById('issueBaseCost').innerText = `${selectedOption.cost.toLocaleString()}원`;
-      document.getElementById('issueBaseSat').innerText = `${selectedOption.sat}점`;
-      document.getElementById('issueDescription').innerText = selectedOption.issue;
-      document.getElementById('issueCostBox').innerText = `추가 비용: +${selectedOption.extraCost.toLocaleString()}원`;
-      document.getElementById('issueSatBox').innerText = `만족감 변화: ${selectedOption.extraSat >= 0 ? '+' : ''}${selectedOption.extraSat}점`;
-      
+    function select(t) {
+      clearInterval(timer);
+      const d = quizData[currentIdx][t];
+      const c = d.c + d.ec, s = d.s + d.es;
+      cost += c; sat += s;
+      log.push({q:d.n, c, s});
+      document.getElementById('issueDesc').innerText = d.is;
+      document.getElementById('issueCost').innerText = `비용 +${d.ec}`;
+      document.getElementById('issueSat').innerText = `만족감 ${d.es}`;
       document.getElementById('screenPlay').classList.add('hidden');
       document.getElementById('screenIssue').classList.remove('hidden');
+      document.getElementById('btnConfirm').onclick = () => { currentIdx++; document.getElementById('screenIssue').classList.add('hidden'); document.getElementById('screenPlay').classList.remove('hidden'); loadQ(); };
     }
 
-    document.getElementById('btnIssueConfirm').addEventListener('click', () => {
-      sound.click();
-      document.getElementById('dashCost').innerText = `${accumulatedCost.toLocaleString()}원`;
-      document.getElementById('dashSatisfaction').innerText = `${accumulatedSatisfaction}점`;
-      document.getElementById('screenIssue').classList.add('hidden');
-      document.getElementById('screenPlay').classList.remove('hidden');
-      currentQuestionIdx++;
-      loadQ();
-    });
-
-    // --- 결산 리포트 처리 ---
     function endGame() {
-      sound.done();
       document.getElementById('screenPlay').classList.add('hidden');
       document.getElementById('screenResult').classList.remove('hidden');
-      
-      document.getElementById('resultTotalCost').innerText = `${accumulatedCost.toLocaleString()}원`;
-      document.getElementById('resultTotalSat').innerText = `${accumulatedSatisfaction}점`;
-      
+      document.getElementById('finalCost').innerText = cost.toLocaleString();
+      document.getElementById('finalSat').innerText = sat;
       const tbody = document.getElementById('resultTableBody');
-      tbody.innerHTML = '';
-      
-      // 스크롤 없는 컴팩트 12줄 렌더링
-      chosenLog.forEach((item, idx) => {
-        const row = document.createElement('tr');
-        row.className = "hover:bg-purple-50 transition-colors";
-        row.innerHTML = `
-          <td class="p-2 border-r border-purple-100 font-bold truncate max-w-[170px]" title="${item.context}">${idx+1}. ${item.context}</td>
-          <td class="p-2 border-r border-purple-100 text-purple-700 font-extrabold text-xs">${item.chosen}</td>
-          <td class="p-2 text-right border-r border-purple-100 text-red-600 text-xs">${item.cost.toLocaleString()}원</td>
-          <td class="p-2 text-right text-green-600 text-xs">${item.sat}점</td>
-        `;
-        tbody.appendChild(row);
+      log.forEach((l,i) => {
+        tbody.innerHTML += `<tr><td>${i+1}</td><td>${l.q}</td><td>${l.c}</td><td>${l.s}</td></tr>`;
       });
-
-      // 유형 진단
-      const analysisEl = document.getElementById('resultAnalysisText');
-      if (accumulatedCost < 100000 && accumulatedSatisfaction >= 900) {
-        analysisEl.innerHTML = "🏆 <strong>[천재적인 합리성 탐험가]</strong><br>쓸데없는 충동 지출이나 모방 소비에 단 한 번도 유혹당하지 않고, 가성비와 만족의 밸런스를 가장 똑똑하게 조율한 영웅형 탐험가입니다!";
-      } else if (accumulatedCost > 300000) {
-        analysisEl.innerHTML = "💸 <strong>[시원한 통큰 소비 탐험가]</strong><br>만족감은 높았지만 한순간의 모방(유행)과 호기심 때문에 지갑이 탈탈 비었어요! 소비하기 전에 보이지 않는 숨은 비용에 대해 좀 더 고민하는 자세를 길러봅시다.";
-      } else if (accumulatedSatisfaction < 200) {
-        analysisEl.innerHTML = "🌧️ <strong>[어설픈 짠돌이 탐험가]</strong><br>돈을 아끼려던 마음은 좋았지만, 품질과 뒤끝을 고민하지 않아 지갑도 잃고 속도 가득 상했네요! 다음번에는 비용 대비 성능을 꼼꼼하게 다시 비교해 봐요.";
-      } else {
-        analysisEl.innerHTML = "⚖️ <strong>[안정적인 균형 소비 탐험가]</strong><br>나의 지출 비용과 행복 만족감의 시소 위에서 똑똑하게 저울질할 줄 아는 현명한 학생이군요! 합리적 소비의 지혜를 온몸으로 이미 터득했습니다.";
-      }
     }
 
-    // --- HTML2CANVAS 모듈을 통한 이미지 변환 저장 ---
-    document.getElementById('btnDownload').addEventListener('click', () => {
-      sound.click();
-      const target = document.getElementById('report-capture-area');
-      
-      // 고해상도 고화질 이미지 전환 옵션 셋업
-      html2canvas(target, {
-        scale: 2, 
-        useCORS: true, 
-        backgroundColor: "#ffffff"
-      }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = '나의_합리적선택_탐험보고서.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+    document.getElementById('btnDownload').onclick = () => {
+      html2canvas(document.getElementById('report-capture-area')).then(canvas => {
+        const a = document.createElement('a'); a.download = '탐험보고서.png'; a.href = canvas.toDataURL(); a.click();
       });
-    });
+    };
   </script>
-
 </body>
 </html>
