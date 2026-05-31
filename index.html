@@ -4,380 +4,318 @@
   <meta charset="UTF-8">
   <title>합리적 선택 탐험대 2.0</title>
   <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <!-- 눈누 한글 폰트 (가독성 높은 개구체 및 레트로 둥근모꼴) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- html2canvas 라이브러리 (화면을 이미지로 캡처하여 저장하는 모듈) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- 가독성이 높은 둥근 한글 폰트 적용 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=DungGeunMo&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Gaegu', sans-serif;
-      font-size: 1.35rem;
+      font-size: 1.25rem;
     }
     .pixel-font {
       font-family: 'DungGeunMo', monospace;
     }
-    /* 스크롤바 미세 커스텀 */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f3e8ff;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #c084fc;
-      border-radius: 4px;
+    /* 12줄의 전체 표가 스크롤 없이 한눈에 들어올 수 있도록 압축적인 표 레이아웃 설계 */
+    .compact-table th, .compact-table td {
+      padding: 4px 6px;
+      line-height: 1.15;
+      font-size: 0.85rem;
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 min-h-screen flex flex-col items-center justify-center p-2 md:p-4">
 
-  <!-- 상단 제어 장치 (음소거 토글) -->
+  <!-- 상단 음소거 제어 버튼 -->
   <div class="fixed top-4 right-4 z-50">
-    <button id="muteBtn" class="bg-white hover:bg-purple-100 text-purple-700 font-bold py-2 px-4 rounded-full shadow-lg flex items-center gap-2 border-2 border-purple-300 transition-all cursor-pointer">
+    <button id="muteBtn" class="bg-white hover:bg-purple-100 text-purple-700 font-bold py-1.5 px-3 rounded-full shadow-lg flex items-center gap-1.5 border-2 border-purple-300 transition-all cursor-pointer text-sm">
       <span id="muteIcon">🔊</span> <span id="muteText">소리 켬</span>
     </button>
   </div>
 
-  <!-- 메인 게임 보드 -->
-  <main id="gameWrapper" class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border-4 border-purple-300 p-6 md:p-8 transition-all duration-300 relative overflow-hidden">
+  <!-- 메인 보드 컨테이너 -->
+  <main id="gameWrapper" class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border-4 border-purple-400 p-4 md:p-6 relative overflow-hidden">
     
-    <!-- 배경 장식용 흐르는 선 효과 -->
-    <div class="absolute -top-10 -left-10 w-40 h-40 bg-purple-200/30 rounded-full blur-2xl pointer-events-none"></div>
-    <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-pink-200/30 rounded-full blur-2xl pointer-events-none"></div>
-
-    <!-- ========================================== -->
-    <!-- [1] 로그인 및 정보 입력 화면 -->
-    <!-- ========================================== -->
-    <div id="screenStart" class="space-y-6 text-center">
+    <!-- [1] 시작 화면 (개인정보 입력칸 없이 바로 시작) -->
+    <div id="screenStart" class="space-y-6 text-center py-6">
       <div class="flex justify-center">
-        <svg width="120" height="120" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="animate-bounce">
-          <path d="M4 2H12V3H14V4H15V6H14V8H12V10H10V12H9V14H7V12H6V10H4V8H2V6H1V4H2V3H4V2Z" fill="#C084FC"/>
-          <path d="M5 3H11V4H13V5H14V6H13V7H11V9H9V11H7V9H5V7H3V6H2V5H4V4H5V3Z" fill="#F472B6"/>
-          <path d="M5 4H8V7H5V4Z" fill="#FDF2F8"/>
+        <!-- 핑크 주얼리 도트 아이콘 -->
+        <svg width="110" height="110" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="animate-bounce">
+          <path d="M4 2H12V3H14V4H15V6H14V8H12V10H10V12H9V14H7V12H6V10H4V8H2V6H1V4H2V3H4V2Z" fill="#C084FC"></path>
+          <path d="M5 3H11V4H13V5H14V6H13V7H11V9H9V11H7V9H5V7H3V6H2V5H4V4H5V3Z" fill="#F472B6"></path>
+          <path d="M5 4H8V7H5V4Z" fill="#FDF2F8"></path>
         </svg>
       </div>
-      <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500 tracking-wide drop-shadow pixel-font">
+      <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500 tracking-wide pixel-font">
         합리적 선택 탐험대 2.0
       </h1>
       
-      <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4 text-purple-900 font-bold text-lg md:text-xl">
-        🐿️ "안녕! 난 탐험 대장 다람이야!<br>
-        우리가 살아가면서 끊임없이 겪게 되는 선택의 순간,<br>
-        <span class="text-pink-600 underline decoration-pink-400 decoration-2">적은 비용으로 최고의 만족</span>을 얻는 비밀을 함께 밝혀보자!"
+      <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-5 text-purple-900 font-bold text-lg md:text-xl leading-relaxed max-w-md mx-auto">
+        🐿️ "안녕! 나는 탐험 대장 다람이야!<br>
+        합리적인 선택이란 <span class="text-pink-600 underline decoration-pink-300 decoration-2">가장 적은 비용으로 가장 큰 만족</span>을 얻는 과정이란다!<br>
+        유혹을 이겨내고 나만의 멋진 탐험 보고서를 완성해 보자!"
       </div>
 
-      <!-- 탐험가 학생 정보 폼 -->
-      <form id="startForm" class="space-y-4 max-w-md mx-auto bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-inner">
-        <div class="grid grid-cols-2 gap-3 text-left">
-          <div class="col-span-2">
-            <label class="block text-gray-700 font-bold mb-1">🏫 학교 이름</label>
-            <input type="text" id="inputSchool" required placeholder="예: 미래초등학교" class="w-full px-4 py-2.5 rounded-xl border-2 border-purple-200 outline-none focus:border-purple-500 bg-white">
-          </div>
-          <div>
-            <label class="block text-gray-700 font-bold mb-1">🎒 학년 / 반</label>
-            <div class="flex items-center gap-2">
-              <input type="number" id="inputGrade" value="4" min="1" max="6" required class="w-14 text-center py-2 rounded-xl border-2 border-purple-200 bg-white outline-none">
-              <span class="font-bold text-gray-600 text-sm">학년</span>
-              <input type="number" id="inputClass" required placeholder="1" min="1" class="w-14 text-center py-2 rounded-xl border-2 border-purple-200 bg-white outline-none">
-              <span class="font-bold text-gray-600 text-sm">반</span>
-            </div>
-          </div>
-          <div>
-            <label class="block text-gray-700 font-bold mb-1">🔢 번호 / 이름</label>
-            <div class="flex items-center gap-2">
-              <input type="number" id="inputNumber" required placeholder="7" min="1" class="w-14 text-center py-2 rounded-xl border-2 border-purple-200 bg-white outline-none">
-              <span class="font-bold text-gray-600 text-sm">번</span>
-              <input type="text" id="inputName" required placeholder="박탐험" class="w-24 text-center py-2 rounded-xl border-2 border-purple-200 bg-white outline-none">
-            </div>
-          </div>
-        </div>
-        <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-extrabold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 transition-all text-2xl cursor-pointer">
+      <div class="space-y-4">
+        <p class="text-gray-400 text-xs font-bold">🔒 본 프로그램은 개인정보를 절대로 요구하거나 수집하지 않는 안전한 학습 도구입니다.</p>
+        <button onclick="startGame()" class="w-full max-w-xs bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-extrabold py-3.5 px-6 rounded-2xl shadow-xl hover:shadow-2xl transform active:scale-95 transition-all text-2xl cursor-pointer">
           탐험 시작하기 🧭
         </button>
-      </form>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- [2] 탐험 전 개념 학습 사전 교육화면 (튜토리얼) -->
-    <!-- ========================================== -->
-    <div id="screenTutorial" class="hidden space-y-6">
-      <div class="flex items-center gap-3">
-        <span class="text-3xl">🐿️</span>
-        <h2 class="text-2xl font-extrabold text-purple-700">탐험 출발 전, 다람 대장의 특강!</h2>
-      </div>
-
-      <!-- 개념 뉴스 카드 (카드식 슬라이더 구조) -->
-      <div class="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-2xl p-6 min-h-[250px] flex flex-col justify-between">
-        <div id="tutorialContent" class="space-y-4">
-          <!-- JS로 동적 교체 -->
-        </div>
-        <div class="flex justify-between items-center mt-6">
-          <span id="tutPageNum" class="text-sm font-bold text-purple-500">1 / 3 단계</span>
-          <button id="btnNextTutorial" class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold px-6 py-2 rounded-xl shadow-md cursor-pointer transition-all">
-            다음 설명 듣기 ➡️
-          </button>
-        </div>
       </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- [3] 질문 및 선택 게임 플레이 화면 -->
-    <!-- ========================================== -->
-    <div id="screenPlay" class="hidden space-y-6">
-      <!-- 실시간 개인 정보 스코어보드 대시보드 -->
-      <div class="grid grid-cols-3 gap-2 bg-gradient-to-r from-purple-900 to-indigo-900 text-white p-4 rounded-2xl font-bold text-center border-2 border-purple-400 shadow-inner">
-        <div class="bg-purple-800/50 p-1.5 rounded-xl border border-purple-600/30">
-          <p class="text-xs text-purple-300">👤 탐험가</p>
-          <p id="dashStudent" class="text-sm md:text-base truncate">박탐험</p>
+    <!-- [2] 플레이 화면 -->
+    <div id="screenPlay" class="hidden space-y-4">
+      <div class="grid grid-cols-2 gap-4 bg-purple-950 text-white p-3.5 rounded-2xl font-bold text-center border-2 border-purple-400 shadow-inner">
+        <div class="bg-red-950/40 py-1 rounded-xl">
+          <p class="text-xs text-red-300 font-bold">💰 누적 비용</p>
+          <p id="dashCost" class="text-lg text-red-400">0원</p>
         </div>
-        <div class="bg-red-950/40 p-1.5 rounded-xl border border-red-500/20">
-          <p class="text-xs text-red-300">💰 누적 비용</p>
-          <p id="dashCost" class="text-base md:text-lg text-red-400">0원</p>
-        </div>
-        <div class="bg-green-950/40 p-1.5 rounded-xl border border-green-500/20">
-          <p class="text-xs text-green-300">❤️ 누적 만족감</p>
-          <p id="dashSatisfaction" class="text-base md:text-lg text-green-400">0점</p>
+        <div class="bg-green-950/40 py-1 rounded-xl">
+          <p class="text-xs text-green-300 font-bold">❤️ 누적 만족감</p>
+          <p id="dashSatisfaction" class="text-lg text-green-400">0점</p>
         </div>
       </div>
 
-      <!-- 질문 진행 상태바 및 타이머 -->
-      <div class="space-y-2">
-        <div class="flex justify-between items-center text-sm font-bold text-gray-600">
-          <span id="playProgressText" class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full">문제 1 / 8</span>
-          <span id="timerText" class="text-red-500 animate-pulse bg-red-50 border border-red-200 px-3 py-1 rounded-full">⏱️ 남은 시간: 10초</span>
+      <div class="space-y-1.5">
+        <div class="flex justify-between items-center text-xs font-bold text-gray-500">
+          <span id="playProgressText" class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full">문제 1 / 12</span>
+          <span id="timerText" class="text-rose-500 bg-rose-50 border border-rose-200 px-3 py-1 rounded-full">⏱️ 생각 시간: 45초</span>
         </div>
-        <div class="w-full bg-gray-200 h-4 rounded-full overflow-hidden border border-gray-300 shadow-inner">
-          <div id="progressBar" class="bg-gradient-to-r from-purple-400 to-pink-400 h-full transition-all duration-300" style="width: 12.5%"></div>
+        <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden border border-gray-300 shadow-inner">
+          <div id="progressBar" class="bg-gradient-to-r from-purple-400 to-pink-400 h-full transition-all duration-300" style="width: 8.3%"></div>
         </div>
       </div>
 
-      <!-- 메인 질문 상자 -->
-      <div class="text-center py-6 bg-pink-50/60 rounded-2xl border-2 border-pink-200 shadow-sm relative">
-        <p class="text-xs font-extrabold text-pink-500 tracking-widest mb-1">MISSION QUESTION</p>
-        <h2 id="questionText" class="text-xl md:text-2xl font-extrabold text-gray-800 px-4">질문 자리</h2>
+      <div class="text-center py-5 bg-pink-50 rounded-2xl border-2 border-pink-200">
+        <span id="qTag" class="text-xs font-bold text-pink-500 bg-pink-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">소비 분류</span>
+        <h2 id="questionText" class="text-xl md:text-2xl font-extrabold text-gray-800 mt-2 px-4 leading-normal">질문 로딩 중...</h2>
       </div>
 
-      <!-- 양자택일 선택 버튼 그룹 -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <button id="btnOptionA" class="bg-white hover:bg-purple-50 border-4 border-purple-400 p-6 rounded-2xl text-lg font-extrabold text-purple-700 shadow-md hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer">
-          <span class="text-5xl" id="iconOptionA">🍜</span>
-          <span id="textOptionA">짜장면</span>
-          <span id="hintOptionA" class="text-xs text-purple-400 font-bold bg-purple-50 px-2.5 py-1 rounded-full">7,000원 | 만족 100</span>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button id="btnOptionA" class="bg-white hover:bg-purple-50 border-4 border-purple-400 p-5 rounded-2xl text-lg font-extrabold text-purple-700 shadow-md hover:shadow-lg transform active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer">
+          <span class="text-4xl" id="iconOptionA">🍜</span>
+          <span id="textOptionA">선택지 A</span>
+          <span id="hintOptionA" class="text-xs text-purple-400 font-bold bg-purple-50 px-2.5 py-0.5 rounded-full">비용 & 만족도</span>
         </button>
-        <button id="btnOptionB" class="bg-white hover:bg-pink-50 border-4 border-pink-400 p-6 rounded-2xl text-lg font-extrabold text-pink-700 shadow-md hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer">
-          <span class="text-5xl" id="iconOptionB">🔥</span>
-          <span id="textOptionB">짬뽕</span>
-          <span id="hintOptionB" class="text-xs text-pink-400 font-bold bg-pink-50 px-2.5 py-1 rounded-full">9,000원 | 만족 120</span>
+        <button id="btnOptionB" class="bg-white hover:bg-pink-50 border-4 border-pink-400 text-pink-700 font-extrabold p-5 rounded-2xl text-lg font-extrabold text-pink-700 shadow-md hover:shadow-lg transform active:scale-95 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer">
+          <span class="text-4xl" id="iconOptionB">🔥</span>
+          <span id="textOptionB">선택지 B</span>
+          <span id="hintOptionB" class="text-xs text-pink-400 font-bold bg-pink-50 px-2.5 py-0.5 rounded-full">비용 & 만족도</span>
         </button>
       </div>
+
+      <!-- 생각 타이머 종료 후 안내 문장 (강제 이동 차단) -->
+      <p id="waitMsg" class="hidden text-center text-rose-500 font-bold animate-pulse text-sm py-1.5 bg-rose-50 border border-rose-100 rounded-xl">
+        💡 제한시간이 모두 지났습니다! 서두르지 말고 친구와 충분히 토론을 해본 뒤 신중하게 원하는 보기를 눌러주세요!
+      </p>
     </div>
 
-    <!-- ========================================== -->
-    <!-- [4] 돌발 변수 연출 및 해설 피드백 화면 -->
-    <!-- ========================================== -->
-    <div id="screenIssue" class="hidden space-y-6 text-center animate-fade-in">
-      <h2 class="text-3xl font-extrabold text-amber-500 flex items-center justify-center gap-1 animate-bounce">
+    <!-- [3] 돌발 상황 발생 연출 화면 -->
+    <div id="screenIssue" class="hidden text-center space-y-5 animate-fade-in py-2">
+      <h2 class="text-3xl font-extrabold text-amber-500 flex items-center justify-center gap-1.5 animate-bounce">
         🚨 돌발 변수 발생! 🚨
       </h2>
 
-      <!-- 내가 한 기본 선택 카드 -->
-      <div class="bg-gray-50 border border-gray-200 p-4 rounded-2xl max-w-md mx-auto shadow-sm">
-        <p class="text-gray-500 text-xs font-bold uppercase">나의 기본 선택 결과</p>
-        <p id="issueChoiceName" class="text-xl font-extrabold text-purple-700 mt-1">🍜 짜장면</p>
-        <div class="flex justify-around text-sm font-bold text-gray-700 mt-2 bg-white py-1.5 rounded-xl border border-gray-100">
-          <span>기본 비용: <mark class="bg-red-100 px-1 text-red-700" id="issueBaseCost">7,000원</mark></span>
-          <span>기본 만족감: <mark class="bg-green-100 px-1 text-green-700" id="issueBaseSat">100점</mark></span>
+      <div class="bg-gray-50 border border-gray-200 p-3 rounded-xl max-w-sm mx-auto">
+        <p id="issueChoiceName" class="text-lg font-extrabold text-purple-700">고른 항목</p>
+        <div class="flex justify-around text-xs font-bold text-gray-600 mt-1.5">
+          <span>기본 비용: <mark id="issueBaseCost" class="bg-red-50 text-red-600 px-1">0원</mark></span>
+          <span>기본 만족감: <mark id="issueBaseSat" class="bg-green-50 text-green-600 px-1">0점</mark></span>
         </div>
       </div>
 
-      <!-- 해설용 대화창 구성 (다람이 해설) -->
-      <div class="bg-amber-50/70 border-4 border-amber-300 p-6 rounded-2xl max-w-lg mx-auto shadow-inner relative">
-        <div class="absolute -top-6 left-6 text-4xl">🐿️</div>
-        <p class="text-left text-sm text-amber-800 font-extrabold bg-amber-200/50 w-max px-3 py-1 rounded-full mb-2">대장 다람이의 피드백</p>
-        <p id="issueDescription" class="text-left text-lg font-bold text-amber-900 leading-relaxed">
-          하지만 음식이 너무 늦게 나와서 다른 볼일을 보지 못했어요! 배가 고파지면서 만족도가 떨어졌네요.
-        </p>
-        <div class="flex justify-center gap-4 font-extrabold text-base mt-4">
-          <div id="issueCostBox" class="text-red-600 bg-white px-4 py-2 rounded-xl shadow border border-red-200">추가 비용: +0원</div>
-          <div id="issueSatBox" class="text-blue-600 bg-white px-4 py-2 rounded-xl shadow border border-blue-200">만족감 변화: -10점</div>
+      <div class="bg-amber-50/80 border-4 border-amber-300 p-5 rounded-2xl max-w-md mx-auto shadow-inner relative">
+        <div class="absolute -top-6 left-6 text-3xl">🐿️</div>
+        <p id="issueDescription" class="text-left text-base font-bold text-amber-900 leading-relaxed pt-1">피드백 설명</p>
+        <div class="flex justify-center gap-3 font-extrabold text-sm mt-3">
+          <div id="issueCostBox" class="text-red-600 bg-white px-3.5 py-1.5 rounded-lg shadow border border-red-200">추가 비용</div>
+          <div id="issueSatBox" class="text-blue-600 bg-white px-3.5 py-1.5 rounded-lg shadow border border-blue-200">만족감 변화</div>
         </div>
       </div>
 
-      <button id="btnIssueConfirm" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold py-3.5 px-8 rounded-xl shadow-md hover:shadow-xl text-xl cursor-pointer transition-all transform active:scale-95">
+      <button id="btnIssueConfirm" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold py-2.5 px-8 rounded-xl shadow-md text-lg cursor-pointer transition-all transform active:scale-95">
         다음 단계로 전진! 🏃💨
       </button>
     </div>
 
-    <!-- ========================================== -->
-    <!-- [5] 최종 결산 및 성찰 보고서 화면 (GAME STOP) -->
-    <!-- ========================================== -->
-    <div id="screenResult" class="hidden space-y-6">
-      <h2 class="text-3xl font-extrabold text-center text-purple-700 tracking-tight">🧭 최종 탐험 보고서 결산 🧭</h2>
+    <!-- [4] 최종 결산 보고서 화면 (스크롤 없는 고정식 캡처 영역 설정) -->
+    <div id="screenResult" class="hidden space-y-4">
       
-      <!-- 상세 8단계 테이블 -->
-      <div class="overflow-y-auto max-h-[220px] rounded-xl border-2 border-purple-200 shadow-sm">
-        <table class="w-full text-left border-collapse bg-white text-xs md:text-sm">
-          <thead class="sticky top-0 bg-purple-100 text-purple-800 font-bold border-b border-purple-200 z-10">
-            <tr>
-              <th class="p-3">선택 상황</th>
-              <th class="p-3">나의 결정</th>
-              <th class="p-3 text-right">총 비용</th>
-              <th class="p-3 text-right">총 만족감</th>
-            </tr>
-          </thead>
-          <tbody id="resultTableBody" class="divide-y divide-gray-100 font-medium text-gray-700">
-            <!-- JS 동적 생성 -->
-          </tbody>
-        </table>
-      </div>
-
-      <!-- 최종 누적 점수 총합 요약 -->
-      <div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-600 to-pink-500 text-white p-4 rounded-2xl text-center font-extrabold shadow-lg">
-        <div class="border-r border-white/20">
-          <p class="text-purple-200 text-xs">💰 총 지불 비용</p>
-          <p id="resultTotalCost" class="text-xl md:text-2xl">0원</p>
-        </div>
-        <div>
-          <p class="text-pink-200 text-xs">❤️ 총 획득 만족감</p>
-          <p id="resultTotalSat" class="text-xl md:text-2xl">0점</p>
-        </div>
-      </div>
-
-      <!-- 탐험가 성향 분석 결과 박스 -->
-      <div class="bg-purple-50 border-2 border-purple-300 p-4 rounded-xl space-y-2">
-        <h3 class="text-base font-extrabold text-purple-800 flex items-center gap-1">
-          📊 탐험 성향 진단서
-        </h3>
-        <p id="resultAnalysisText" class="text-gray-800 text-base leading-relaxed">
-          분석 데이터 로딩 중...
-        </p>
-      </div>
-
-      <!-- 교실 패들렛 제출용 3단계 생각 나누기 학습 서술지 -->
-      <div class="bg-yellow-50 border-2 border-yellow-200 p-5 rounded-2xl space-y-4">
-        <h3 class="text-lg font-extrabold text-yellow-800 flex items-center gap-1">
-          ✍️ 오늘의 성찰 일지 쓰기
-        </h3>
+      <!-- 캡처될 독립형 영역 설정 (배경색 흰색 및 패딩 추가) -->
+      <div id="report-capture-area" class="p-4 bg-white border-4 border-purple-200 rounded-2xl">
+        <h2 class="text-2xl font-extrabold text-center text-purple-700 mb-3 tracking-wider pixel-font">🧭 나의 합리적 선택 성찰 보고서 🧭</h2>
         
-        <div class="space-y-2 text-sm md:text-base">
-          <div>
-            <label class="block text-gray-800 font-bold mb-1">1. 게임 중 가장 후회되거나 아쉬웠던 선택은 무엇이었나요? 그 까닭도 적어보세요.</label>
-            <input type="text" id="refRegret" required placeholder="예시: 초콜릿을 고른 것인데, 돌발 변수로 이가 썩어 치료비가 너무 많이 나왔기 때문입니다." class="w-full p-2.5 rounded-xl border border-yellow-300 focus:border-yellow-500 bg-white outline-none font-medium">
+        <!-- 스크롤 없는 컴팩트 데이터 표 -->
+        <div class="overflow-hidden rounded-xl border border-purple-200 shadow-sm mb-3">
+          <table class="compact-table w-full text-left border-collapse bg-white">
+            <thead class="bg-purple-100 text-purple-800 font-bold text-xs border-b border-purple-200">
+              <tr>
+                <th class="p-2 border-r border-purple-200">선택 상황</th>
+                <th class="p-2 border-r border-purple-200">내가 내린 결정</th>
+                <th class="p-2 text-right border-r border-purple-200">최종 비용</th>
+                <th class="p-2 text-right">최종 만족감</th>
+              </tr>
+            </thead>
+            <tbody id="resultTableBody" class="divide-y divide-gray-100 font-bold text-gray-700">
+              <!-- JS로 12줄 컴팩트하게 밀어넣음 -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 최종 점수 누적 판넬 -->
+        <div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-600 to-pink-500 text-white p-3.5 rounded-2xl text-center font-extrabold shadow-md mb-3">
+          <div class="border-r border-white/20">
+            <p class="text-[10px] text-purple-200">💰 총 지불 비용</p>
+            <p id="resultTotalCost" class="text-xl">0원</p>
           </div>
           <div>
-            <label class="block text-gray-800 font-bold mb-1">2. 가장 저렴한 비용으로 최고의 만족을 주었던 최고의 '합리적 선택'은 무엇이었나요?</label>
-            <input type="text" id="refBest" required placeholder="예시: 수리해서 타기를 결정한 것입니다. 비용도 적고 보람도 생겼습니다." class="w-full p-2.5 rounded-xl border border-yellow-300 focus:border-yellow-500 bg-white outline-none font-medium">
+            <p class="text-[10px] text-pink-200">❤️ 총 획득 만족감</p>
+            <p id="resultTotalSat" class="text-xl">0점</p>
           </div>
-          <div>
-            <label class="block text-gray-800 font-bold mb-1">3. 일상생활에서 나만의 합리적인 소비를 실천하기 위해 앞으로 명심해야 할 점은?</label>
-            <textarea id="refWill" rows="2" required placeholder="예시: 눈앞의 저렴한 가격이나 즉각적인 만족만 생각하지 않고, 숨겨진 유지비나 기회비용을 저울질해 보겠습니다." class="w-full p-2.5 rounded-xl border border-yellow-300 focus:border-yellow-500 bg-white outline-none font-medium"></textarea>
-          </div>
+        </div>
+
+        <!-- 성향 분석 결과 박스 -->
+        <div class="bg-purple-50 border-2 border-purple-200 p-3.5 rounded-xl space-y-1 text-sm">
+          <h3 class="font-extrabold text-purple-800">📊 다람 대장의 성향 진단</h3>
+          <p id="resultAnalysisText" class="text-gray-800 leading-snug font-semibold">진단 데이터 계산 중...</p>
         </div>
       </div>
 
-      <!-- 전송 및 결과 복사 -->
-      <div class="text-center">
-        <button id="btnCopyReport" class="w-full bg-green-500 hover:bg-green-600 text-white font-extrabold py-4 px-6 rounded-2xl shadow-md text-xl transition-all transform active:scale-95 cursor-pointer">
-          📋 결과 복사해서 선생님(패들렛 등)에 제출하기
+      <!-- 성찰 기록장 (이 영역은 캡처 범위 바깥에 배치하여 아이들이 텍스트 입력하기 편리하도록 구성) -->
+      <div class="bg-yellow-50 border-2 border-yellow-200 p-4 rounded-xl space-y-2">
+        <p class="text-yellow-800 font-bold text-sm">✍️ 오늘의 성찰 일지</p>
+        <p class="text-gray-700 text-sm font-semibold">Q. 모든 탐험이 끝났습니다. 오늘 여러분이 배운 <span class="text-purple-700">&#34;합리적 선택&#34;</span>이란 과연 무엇인가요?</p>
+        <textarea id="textReflection" rows="2" placeholder="예시: 유행이나 충동에 휩쓸리지 않고, 내가 가진 돈 안에서 나에게 가장 쓸모 있고 행복을 주는 물건을 골라내는 깊은 고민 과정입니다." class="w-full p-2.5 rounded-lg border border-yellow-200 focus:border-yellow-400 bg-white outline-none text-sm font-semibold text-gray-800"></textarea>
+      </div>
+
+      <!-- 저장 버튼 및 패들렛 안내판 -->
+      <div class="space-y-3">
+        <button id="btnDownload" class="w-full bg-green-500 hover:bg-green-600 text-white font-extrabold py-4 px-6 rounded-2xl shadow-md text-xl transform active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2">
+          📥 보고서 이미지 파일로 저장하기
         </button>
-        <p class="text-xs text-gray-500 mt-2 font-bold text-center">버튼을 누르면 결과가 복사됩니다. 패들렛이나 클래스팅 등 학급 게시판에 붙여넣기(Ctrl+V) 하세요!</p>
+        <div class="bg-pink-50 border border-pink-200 text-pink-700 text-center py-2.5 px-4 rounded-2xl font-bold text-sm leading-relaxed animate-pulse">
+          📸 <strong>미션 완료!</strong> 저장된 보고서 이미지 파일을<br>우리 반 학급 <strong>패들렛(Padlet)</strong>에 첨부하고 나의 생각을 함께 공유하세요!
+        </div>
       </div>
     </div>
 
   </main>
 
   <script>
-    // --- 글로벌 상태 변수 ---
-    let studentInfo = {};
+    // --- 핵심 질문 및 교육 콘텐츠 12개 셋업 ---
     let currentQuestionIdx = 0;
     let accumulatedCost = 0;
     let accumulatedSatisfaction = 0;
     let timerInterval = null;
-    let timeLeft = 10;
+    let timeLeft = 45; // 넉넉하게 늘어난 생각 시간 45초
     let isMuted = false;
     let chosenLog = [];
-    let currentTutStep = 0;
 
-    // --- 3단계 사전 개념 설명 튜토리얼 데이터 ---
-    const tutorialSteps = [
-      {
-        title: "🔑 개념 1. 자원의 희소성과 선택",
-        body: "우리가 원하는 것은 정말 무궁무진하게 많아요. 하지만 <strong>우리가 가진 돈, 시간, 에너지</strong>는 항상 유한하고 한정되어 있답니다. 이것을 경제학 용어로 <strong>'자원의 희소성'</strong>이라고 불러요. 희소성 때문에 우리는 매 순간 가장 나은 결과를 위해 '선택'을 해야만 한답니다."
-      },
-      {
-        title: "⚖️ 개념 2. 선택의 저울: 비용과 만족감",
-        body: "선택을 할 때는 저울 양쪽에 두 가지를 올려놓고 저울질을 해요.<br>1. <strong>비용(Cost):</strong> 내가 지불하거나 포기해야 하는 가치 (돈, 시간, 노력 등)<br>2. <strong>만족감(Benefit):</strong> 내가 그 선택을 해서 얻는 행복과 가치<br>즉, <strong>'비용은 최대한 적게, 만족감은 최대한 크게'</strong> 만드는 균형을 찾는 것이 목표입니다."
-      },
-      {
-        title: "⚡ 개념 3. 숨은 비용과 기회비용",
-        body: "물건을 살 때 눈에 보이는 가격표만 보면 안 돼요! 물건을 관리하는 노력, 예기치 않은 수리비 같은 <strong>'보이지 않는 숨은 비용'</strong>도 고민해야 합니다. 또한 하나를 고르면 아쉽게 포기해야 하는 가치가 생기는데, 이를 <strong>'기회비용'</strong>이라고 한답니다. 다 같이 직접 체험하러 가볼까요?"
-      }
-    ];
-
-    // --- 4학년 실생활 밀착형 8단계 정교한 질문 데이터셋 ---
     const quizData = [
       {
-        question: "Q1. 오늘 학원 가기 전에 저녁으로 고를 메뉴는?",
+        question: "Q1. 오늘 학원 가기 전 저녁 메뉴로 고를 음식은?",
+        tag: "만족스러운 소비",
         options: {
-          A: { name: "짜장면", icon: "🍜", cost: 7000, sat: 100, issue: "양파의 사각사각한 식감이 좋고 정말 맛있어요! 하지만 음식이 늦게 나와 차를 놓치는 바람에 학원에 지각하고 말았어요.", extraCost: 0, extraSat: -15 },
-          B: { name: "짬뽕", icon: "🔥", cost: 9000, sat: 120, issue: "얼큰하고 시원한 국물이 최고였어요! 그런데 국물이 하얀 티셔츠에 몽땅 튀어서 세탁용 얼룩제거제를 새로 사게 되었습니다.", extraCost: 2000, extraSat: 0 }
+          A: { name: "짜장면", icon: "🍜", cost: 7000, sat: 100, issue: "음식이 늦게 나오는 바람에 학원 버스를 놓쳐 지각했어요!", extraCost: 0, extraSat: -10 },
+          B: { name: "짬뽕", icon: "🔥", cost: 9000, sat: 120, issue: "매콤한 국물이 하얀 옷에 튀어 얼룩제거제를 샀어요ㅠㅠ", extraCost: 2000, extraSat: 0 }
         }
       },
       {
-        question: "Q2. 등하굣길에 먹을 최고로 달콤한 간식은?",
+        question: "Q2. 편의점에서 과자 2+1 행사용 과자를 골라볼까요?",
+        tag: "충동 소비",
         options: {
-          A: { name: "사탕", icon: "🍬", cost: 1000, sat: 100, issue: "오래 먹을 수 있어서 행복했어요! 그런데 장난치다 사탕이 머리카락에 단단히 뭉개져 붙는 바람에 미용실에 가서 머리를 잘라내야 했습니다.", extraCost: 8000, extraSat: -10 },
-          B: { name: "초콜릿", icon: "🍫", cost: 2000, sat: 90, issue: "기분이 아주 좋아졌어요! 그런데 이가 다 썩어서 치과 치료를 받고, 아프고 무서운 시간을 보냈습니다.", extraCost: 15000, extraSat: -30 }
+          A: { name: "꼭 필요한 1개만 구입", icon: "🍪", cost: 1500, sat: 80, issue: "돈을 낭비하지 않고 계획적으로 절약한 스스로가 멋져요!", extraCost: 0, extraSat: 20 },
+          B: { name: "행사 세트로 3개 구입", icon: "🍪🍪🍪", cost: 3000, sat: 110, issue: "행사라 샀지만 다 먹지 못하고 결국 버리게 되었습니다.", extraCost: 0, extraSat: -40 }
         }
       },
       {
-        question: "Q3. 학용품 가게에서 지우개를 사야 할 때 나의 결정은?",
+        question: "Q3. 문방구 앞, 친구들에게 엄청나게 유행하는 이쁜 필통!",
+        tag: "모방 소비",
         options: {
-          A: { name: "귀여운 캐릭터 피규어 지우개", icon: "🧸", cost: 1500, sat: 110, issue: "디자인이 예뻐서 인기가 많았어요! 하지만 고무가 너무 단단해 글씨가 지워지지 않고 종이만 찢어져 새 지우개를 또 사야 했습니다.", extraCost: 500, extraSat: -60 },
-          B: { name: "잘 지워지는 미술용 하얀 지우개", icon: "✏️", cost: 500, sat: 70, issue: "생긴 것은 밋밋하지만 아주 깔끔하게 슥슥 잘 지워져서, 미술 시간마다 친구들이 너도나도 빌려달라며 인기 만점이 되었어요!", extraCost: 0, extraSat: 40 }
+          A: { name: "옛날 필통 계속 쓰기", icon: "✏️", cost: 0, sat: 90, issue: "불필요한 지출을 참고 지구 환경을 보호해 보람이 생겼어요!", extraCost: 0, extraSat: 30 },
+          B: { name: "유행 필통 새로 사기", icon: "✨", cost: 15000, sat: 130, issue: "한 달 만에 더 멋진 필통이 유행해 또 사고 싶어졌어요.", extraCost: 0, extraSat: -60 }
         }
       },
       {
-        question: "Q4. 고장 난 나의 인라인스케이트를 발견했습니다. 어떻게 할까요?",
+        question: "Q4. 고장 난 나의 인라인 스케이트, 어떻게 할까요?",
+        tag: "합리적 소비",
         options: {
-          A: { name: "수리점에 맡겨 고쳐서 타기", icon: "🔧", cost: 30000, sat: 90, issue: "수리 기사님이 바퀴 축에 전용 윤활유까지 무료로 쳐주셔서, 예전보다 훨씬 부드럽고 쌩쌩 잘 나가며 환경을 보호했다는 깊은 보람까지 얻었어요!", extraCost: 0, extraSat: 60 },
-          B: { name: "디자인이 멋진 최신형 새 제품 사기", icon: "✨", cost: 60000, sat: 150, issue: "처음 신었을 때는 멋있고 신났지만, 새 신발의 뒤꿈치가 너무 딱딱해 양쪽 발뒤꿈치가 모두 심하게 허물이 벗겨지고 대일밴드 값만 들었네요.", extraCost: 1000, extraSat: -80 }
+          A: { name: "수리점에 맡겨 고쳐 타기", icon: "🔧", cost: 30000, sat: 100, issue: "바퀴 축에 기름을 칠해 새것처럼 쌩쌩 부드럽게 잘 나갑니다!", extraCost: 0, extraSat: 50 },
+          B: { name: "멋있는 새 제품 새로 사기", icon: "⛸️", cost: 50000, sat: 100, issue: "새 구두 가죽이 너무 딱딱해서 양 발뒤꿈치가 심하게 쓸렸어요.", extraCost: 0, extraSat: -150 }
         }
       },
       {
-        question: "Q5. 이번 일요일에 영화를 보고 싶을 때, 나의 관람 방식은?",
+        question: "Q5. 인기 키즈 유튜버가 화려하게 선전하는 로봇 장난감!",
+        tag: "모방 소비",
         options: {
-          A: { name: "시원한 대형 스크린의 영화관", icon: "🎬", cost: 15000, sat: 110, issue: "큰 서라운드 입체 음향 덕분에 완전 몰입했어요! 게다가 영화 시작 전 주연 배우가 극장을 찾아와 무대인사 이벤트를 벌이는 대박 횡재를 했습니다!", extraCost: 0, extraSat: 150 },
-          B: { name: "집에서 편안하게 TV OTT로 보기", icon: "🏠", cost: 0, sat: 90, issue: "침대에 누워 봐서 진짜 편하고 좋았어요! 그런데 누워서 보다 보니 갑자기 배가 고파져 마라탕과 치킨을 과하게 배달시키는 바람에 과소비를 했습니다.", extraCost: 22000, extraSat: 0 }
+          A: { name: "참아두고 구매 보류하기", icon: "🚫", cost: 0, sat: 70, issue: "광고의 자극적인 유혹을 어른스럽게 이겨낸 훌륭한 자제력!", extraCost: 0, extraSat: 50 },
+          B: { name: "엄마를 졸라 바로 사기", icon: "🤖", cost: 45000, sat: 150, issue: "영상보다 직접 만져보니 놀이가 너무 심심해서 금방 실망했어요.", extraCost: 0, extraSat: -80 }
         }
       },
       {
-        question: "Q6. 주말에 가족들과 함께 떠나는 최고의 나들이 계획은?",
+        question: "Q6. 대형 마트 계산대 대기선 옆, 눈에 밟히는 달콤한 젤리!",
+        tag: "충동 소비",
         options: {
-          A: { name: "공기 좋고 자연과 함께하는 캠핑장", icon: "⛺", cost: 80000, sat: 110, issue: "가족들과 도란도란 맛있는 숯불고기를 구워 먹어 최고였어요! 하지만 밤에 야생 모기떼에게 무려 20군데나 물리며 밤새 가려움증에 시달렸습니다.", extraCost: 0, extraSat: -30 },
-          B: { name: "짜릿한 놀이기구가 가득한 놀이공원", icon: "🎡", cost: 130000, sat: 160, issue: "놀이기구들이 무섭고 엄청 신났어요! 하지만 주말 인파가 너무 빽빽하게 몰려 줄만 2시간씩 서다가 결국 지쳐서 3개밖에 못 타고 파김치가 되었어요.", extraCost: 0, extraSat: -50 }
+          A: { name: "계획에 없던 것이니 참기", icon: "🛒", cost: 0, sat: 60, issue: "불필요한 군것질 비용을 깔끔하게 차단해 내어 개운합니다!", extraCost: 0, extraSat: 40 },
+          B: { name: "망설임 없이 장바구니 넣기", icon: "🍬", cost: 2500, sat: 100, issue: "맛있게 먹었지만 저녁밥을 남겨 부모님께 꾸중을 들었습니다.", extraCost: 0, extraSat: -30 }
         }
       },
       {
-        question: "Q7. 내 방 책상을 정리하기 위한 바구니 수납함 구입은?",
+        question: "Q7. 무더운 여름날 더위를 해소하기 위한 나의 소비는?",
+        tag: "과소비 요인",
         options: {
-          A: { name: "다이소 기본 가성비 플라스틱 바구니", icon: "📥", cost: 2000, sat: 80, issue: "디자인은 조금 촌스럽지만 튼튼하고 공간이 깊어서, 어수선하게 널려있던 연필과 장난감들이 마법처럼 아주 말끔하게 정리되었습니다.", extraCost: 0, extraSat: 30 },
-          B: { name: "유명 원목 가구점 디자인 원목 정리함", icon: "🪵", cost: 24000, sat: 130, issue: "방 분위기가 아주 화사하고 예뻐졌어요! 하지만 원목 특유의 무게감 때문에 가벼운 물건을 넣고 서랍을 뺄 때마다 손목이 아파 손이 잘 가지 않게 되었어요.", extraCost: 0, extraSat: -45 }
+          A: { name: "에어컨 하루 종일 틀어두기", icon: "❄️", cost: 80000, sat: 120, issue: "매우 시원했지만 다음 달 과다하게 날아온 전기 고지서!", extraCost: 30000, extraSat: 0 },
+          B: { name: "선풍기 회전 시원한 물 샤워", icon: "🚿", cost: 5000, sat: 90, issue: "지혜롭게 절약하고 건강하게 여름 더위를 극복했어요!", extraCost: 0, extraSat: 20 }
         }
       },
       {
-        question: "Q8. 오랜 소원이었던 반려동물을 키우기 위해 고른 선택은?",
+        question: "Q8. 주말 휴일, 가족과 힐링하러 갈 멋진 목적지는?",
+        tag: "선택의 만족감",
         options: {
-          A: { name: "진짜 살아있는 작은 햄스터 키우기", icon: "🐹", cost: 15000, sat: 150, issue: "쳇바퀴 도는 모습이 매일 깨물어주고 싶을 만큼 귀여워요! 단, 매주 우리 안의 톱밥을 갈아주고 냄새를 없애기 위해 환기를 열심히 시키는 청소 노동이 필요해요.", extraCost: 0, extraSat: -30 },
-          B: { name: "먹이나 배설물 걱정 없는 인공지능 로봇강아지", icon: "🤖", cost: 45000, sat: 90, issue: "배설물 냄새도 안 나고 깔끔해서 편해요! 하지만 며칠 놀아보니 기계음 소리가 지루해졌고, 고화질 건전지가 엄청나게 빨리 닳아서 계속 비용이 누적되네요.", extraCost: 8000, extraSat: -20 }
+          A: { name: "맑은 숲속 가득한 푸른 산", icon: "⛰️", cost: 5000, sat: 100, issue: "상쾌한 피톤치드를 듬뿍 마셔 정신이 맑아지고 튼튼해져요!", extraCost: 0, extraSat: 20 },
+          B: { name: "가슴이 뻥 뚫리는 푸른 바다", icon: "🌊", cost: 15000, sat: 130, issue: "풍경은 멋졌지만 수많은 인파 속 교통체증 때문에 지쳤어요.", extraCost: 0, extraSat: -20 }
+        }
+      },
+      {
+        question: "Q9. 학교 체육 시간에 신을 운동화, 무엇을 고를까요?",
+        tag: "합리적 소비",
+        options: {
+          A: { name: "가볍고 튼튼한 가성비 국산화", icon: "👟", cost: 35000, sat: 100, issue: "쿠션이 너무 푹신하고 발이 편해서 달리기 1등을 달성했어요!", extraCost: 0, extraSat: 40 },
+          B: { name: "비싸고 유행하는 수입 한정판", icon: "👟💎", cost: 120000, sat: 150, issue: "친구가 신발을 밟을까 봐 체육 시간에 제대로 뛰지 못했어요.", extraCost: 0, extraSat: -100 }
+        }
+      },
+      {
+        question: "Q10. 운동장 놀이 후 목마를 때 1+1 탄산음료 행사는?",
+        tag: "충동 소비",
+        options: {
+          A: { name: "저렴하고 건강한 생수 구입", icon: "💧", cost: 800, sat: 90, issue: "딱 필요한 수분만 갈증 없이 깨끗하게 채워 몸이 가볍습니다!", extraCost: 0, extraSat: 10 },
+          B: { name: "1+1의 화려한 탄산음료", icon: "🥤🥤", cost: 2000, sat: 110, issue: "억지로 두 병을 다 마시는 바람에 밤늦게까지 속이 부글거렸어요.", extraCost: 0, extraSat: -50 }
+        }
+      },
+      {
+        question: "Q11. 정말 보고 싶던 영화가 개봉했을 때 관람 방법은?",
+        tag: "만족스러운 소비",
+        options: {
+          A: { name: "스크린 사운드의 영화관 감상", icon: "🎬", cost: 15000, sat: 100, issue: "영화가 끝나고 감독님과 주연 배우가 무대인사를 와 대박!", extraCost: 0, extraSat: 150 },
+          B: { name: "집 침대 누워 편안히 TV 관람", icon: "🏠", cost: 0, sat: 90, issue: "너무 조용하고 편해서 중간에 나도 모르게 잠들고 말았어요.", extraCost: 0, extraSat: -30 }
+        }
+      },
+      {
+        question: "Q12. 평생 신나게 탈 전용 자전거를 선택해 볼까요?",
+        tag: "합리적 소비",
+        options: {
+          A: { name: "깨끗하고 저렴한 중고 사기", icon: "🚲", cost: 50000, sat: 110, issue: "절약한 돈으로 정말 머리를 안전하게 지킬 고급 헬멧을 장만!", extraCost: 0, extraSat: 50 },
+          B: { name: "번쩍거리는 최신 신상 자전거", icon: "🚲✨", cost: 250000, sat: 160, issue: "자전거를 도둑맞을까 봐 밖에 주차할 때마다 늘 조마조마해요.", extraCost: 0, extraSat: -60 }
         }
       }
     ];
 
-    // --- Web Audio API 효과음 엔진 ---
+    // --- Web Audio API 효과음 사운드 카드 탑재 ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
     function playTone(freq, type, duration) {
       if (isMuted) return;
       try {
@@ -391,16 +329,16 @@
         gain.connect(audioCtx.destination);
         osc.start();
         osc.stop(audioCtx.currentTime + duration);
-      } catch (e) { console.log(e); }
+      } catch (e) {}
     }
 
     const sound = {
       click: () => playTone(650, 'sine', 0.1),
       warn: () => playTone(300, 'sawtooth', 0.12),
       issue: () => {
-        playTone(400, 'triangle', 0.1);
-        setTimeout(() => playTone(500, 'triangle', 0.1), 100);
-        setTimeout(() => playTone(680, 'triangle', 0.25), 200);
+        playTone(400, 'triangle', 0.08);
+        setTimeout(() => playTone(500, 'triangle', 0.08), 80);
+        setTimeout(() => playTone(680, 'triangle', 0.22), 160);
       },
       done: () => {
         playTone(523.25, 'sine', 0.15); 
@@ -410,110 +348,62 @@
       }
     };
 
-    // --- 음소거 토글 기능 ---
     document.getElementById('muteBtn').addEventListener('click', () => {
       isMuted = !isMuted;
       document.getElementById('muteIcon').innerText = isMuted ? "✕" : "🔊";
-      document.getElementById('muteText').innerText = isMuted ? "소리 끔" : "소리 켬";
+      document.getElementById('muteText').innerText = isMuted ? "소리 꺼짐" : "소리 켬";
     });
 
-    // --- [1] 시작 폼 제출 처리 ---
-    document.getElementById('startForm').addEventListener('submit', (e) => {
-      e.preventDefault();
+    function startGame() {
       sound.click();
-      
-      studentInfo = {
-        school: document.getElementById('inputSchool').value,
-        grade: document.getElementById('inputGrade').value,
-        classNum: document.getElementById('inputClass').value,
-        number: document.getElementById('inputNumber').value,
-        name: document.getElementById('inputName').value
-      };
-
-      document.getElementById('dashStudent').innerText = `${studentInfo.classNum}반 ${studentInfo.number}번 ${studentInfo.name}`;
       document.getElementById('screenStart').classList.add('hidden');
-      document.getElementById('screenTutorial').classList.remove('hidden');
-      
-      showTutorialStep();
-    });
-
-    // --- [2] 사전 개념 설명 (튜토리얼 카드식 구동) ---
-    function showTutorialStep() {
-      const step = tutorialSteps[currentTutStep];
-      const container = document.getElementById('tutorialContent');
-      container.innerHTML = `
-        <h3 class="text-xl md:text-2xl font-extrabold text-purple-700">${step.title}</h3>
-        <p class="text-base text-gray-700 leading-relaxed font-semibold">${step.body}</p>
-      `;
-      document.getElementById('tutPageNum').innerText = `${currentTutStep + 1} / ${tutorialSteps.length} 단계`;
-      
-      const btn = document.getElementById('btnNextTutorial');
-      if (currentTutStep === tutorialSteps.length - 1) {
-        btn.innerText = "진짜 탐험 출발! 🤠🚀";
-      } else {
-        btn.innerText = "다음 설명 듣기 ➡️";
-      }
+      document.getElementById('screenPlay').classList.remove('hidden');
+      loadQ();
     }
 
-    document.getElementById('btnNextTutorial').addEventListener('click', () => {
-      sound.click();
-      if (currentTutStep < tutorialSteps.length - 1) {
-        currentTutStep++;
-        showTutorialStep();
-      } else {
-        // 게임 플레이 화면 진입
-        document.getElementById('screenTutorial').classList.add('hidden');
-        document.getElementById('screenPlay').classList.remove('hidden');
-        loadQuestion();
-      }
-    });
-
-    // --- [3] 플레이 단계 구동 ---
-    function loadQuestion() {
-      if (currentQuestionIdx >= quizData.length) {
-        endGame();
-        return;
-      }
-      
+    // --- 질문 업로드 및 타이머 설계 ---
+    function loadQ() {
+      if(currentQuestionIdx >= quizData.length) return endGame();
       clearInterval(timerInterval);
-      timeLeft = 10;
+      
+      const currentQuiz = quizData[currentQuestionIdx];
+      document.getElementById('playProgressText').innerText = `문제 ${currentQuestionIdx + 1} / ${quizData.length}`;
+      document.getElementById('progressBar').style.width = `${((currentQuestionIdx + 1) / quizData.length) * 100}%`;
+      document.getElementById('qTag').innerText = currentQuiz.tag;
+      document.getElementById('questionText').innerText = currentQuiz.question;
+      
+      document.getElementById('textOptionA').innerText = currentQuiz.options.A.name;
+      document.getElementById('iconOptionA').innerText = currentQuiz.options.A.icon;
+      document.getElementById('hintOptionA').innerText = `${currentQuiz.options.A.cost.toLocaleString()}원 | 만족도 ${currentQuiz.options.A.sat}`;
+      
+      document.getElementById('textOptionB').innerText = currentQuiz.options.B.name;
+      document.getElementById('iconOptionB').innerText = currentQuiz.options.B.icon;
+      document.getElementById('hintOptionB').innerText = `${currentQuiz.options.B.cost.toLocaleString()}원 | 만족도 ${currentQuiz.options.B.sat}`;
+      
+      timeLeft = 45; // 숙고 타이머 설정
+      document.getElementById('waitMsg').classList.add('hidden');
       updateTimerUI();
       
       timerInterval = setInterval(() => {
         timeLeft--;
         updateTimerUI();
-        if (timeLeft <= 3 && timeLeft > 0) {
-          sound.warn();
-        }
-        if (timeLeft <= 0) {
+        if(timeLeft <= 3 && timeLeft > 0) sound.warn();
+        if(timeLeft <= 0) {
           clearInterval(timerInterval);
-          handleSelection('A'); // 시간초과 시 강제 자동선택
+          document.getElementById('timerText').innerText = "⌛ 숙고 시간 완료";
+          document.getElementById('waitMsg').classList.remove('hidden'); // 대기 안내판 개시
         }
       }, 1000);
-
-      const currentQuiz = quizData[currentQuestionIdx];
-      document.getElementById('playProgressText').innerText = `문제 ${currentQuestionIdx + 1} / ${quizData.length}`;
-      document.getElementById('progressBar').style.width = `${((currentQuestionIdx + 1) / quizData.length) * 100}%`;
-      document.getElementById('questionText').innerText = currentQuiz.question;
-      
-      document.getElementById('textOptionA').innerText = currentQuiz.options.A.name;
-      document.getElementById('iconOptionA').innerText = currentQuiz.options.A.icon;
-      document.getElementById('hintOptionA').innerText = `${currentQuiz.options.A.cost.toLocaleString()}원 | 만족 ${currentQuiz.options.A.sat}`;
-      
-      document.getElementById('textOptionB').innerText = currentQuiz.options.B.name;
-      document.getElementById('iconOptionB').innerText = currentQuiz.options.B.icon;
-      document.getElementById('hintOptionB').innerText = `${currentQuiz.options.B.cost.toLocaleString()}원 | 만족 ${currentQuiz.options.B.sat}`;
     }
 
     function updateTimerUI() {
-      document.getElementById('timerText').innerText = `⏱️ 남은 시간: ${timeLeft}초`;
+      document.getElementById('timerText').innerText = `⏱️ 생각 시간: ${timeLeft}초`;
     }
 
-    document.getElementById('btnOptionA').addEventListener('click', () => handleSelection('A'));
-    document.getElementById('btnOptionB').addEventListener('click', () => handleSelection('B'));
+    document.getElementById('btnOptionA').addEventListener('click', () => handleChoice('A'));
+    document.getElementById('btnOptionB').addEventListener('click', () => handleChoice('B'));
 
-    // --- [4] 돌발 변수와 이슈 발생 연출 ---
-    function handleSelection(type) {
+    function handleChoice(type) {
       clearInterval(timerInterval);
       sound.issue();
       
@@ -526,21 +416,19 @@
       accumulatedCost += finalCost;
       accumulatedSatisfaction += finalSat;
       
-      // 로그 저장
       chosenLog.push({
-        context: currentQuiz.question,
+        context: currentQuiz.question.split(". ")[1], // 텍스트만 요약
         chosen: selectedOption.name,
         cost: finalCost,
         sat: finalSat
       });
 
-      // 이슈창 데이터 렌더링
+      // 돌발상황 이슈 화면 정보 세팅
       document.getElementById('issueChoiceName').innerText = `${selectedOption.icon} ${selectedOption.name}`;
       document.getElementById('issueBaseCost').innerText = `${selectedOption.cost.toLocaleString()}원`;
       document.getElementById('issueBaseSat').innerText = `${selectedOption.sat}점`;
-      document.getElementById('issueDescription').innerHTML = `"${selectedOption.name}"을(를) 선택했구나!<br>${selectedOption.issue}`;
-      
-      document.getElementById('issueCostBox').innerText = `추가 지출: +${selectedOption.extraCost.toLocaleString()}원`;
+      document.getElementById('issueDescription').innerText = selectedOption.issue;
+      document.getElementById('issueCostBox').innerText = `추가 비용: +${selectedOption.extraCost.toLocaleString()}원`;
       document.getElementById('issueSatBox').innerText = `만족감 변화: ${selectedOption.extraSat >= 0 ? '+' : ''}${selectedOption.extraSat}점`;
       
       document.getElementById('screenPlay').classList.add('hidden');
@@ -549,19 +437,15 @@
 
     document.getElementById('btnIssueConfirm').addEventListener('click', () => {
       sound.click();
-      
-      // 스코어 업데이트 반영
       document.getElementById('dashCost').innerText = `${accumulatedCost.toLocaleString()}원`;
       document.getElementById('dashSatisfaction').innerText = `${accumulatedSatisfaction}점`;
-      
       document.getElementById('screenIssue').classList.add('hidden');
       document.getElementById('screenPlay').classList.remove('hidden');
-      
       currentQuestionIdx++;
-      loadQuestion();
+      loadQ();
     });
 
-    // --- [5] 최종 정산 및 유형 평가 피드백 ---
+    // --- 결산 리포트 처리 ---
     function endGame() {
       sound.done();
       document.getElementById('screenPlay').classList.add('hidden');
@@ -570,86 +454,53 @@
       document.getElementById('resultTotalCost').innerText = `${accumulatedCost.toLocaleString()}원`;
       document.getElementById('resultTotalSat').innerText = `${accumulatedSatisfaction}점`;
       
-      // 상세 데이터 테이블 매핑 빌드
       const tbody = document.getElementById('resultTableBody');
       tbody.innerHTML = '';
-      chosenLog.forEach(item => {
+      
+      // 스크롤 없는 컴팩트 12줄 렌더링
+      chosenLog.forEach((item, idx) => {
         const row = document.createElement('tr');
         row.className = "hover:bg-purple-50 transition-colors";
         row.innerHTML = `
-          <td class="p-3 font-semibold text-gray-900">${item.context.split(".")[0]}단계</td>
-          <td class="p-3 text-purple-600 font-bold">${item.chosen}</td>
-          <td class="p-3 text-right text-red-600 font-bold">${item.cost.toLocaleString()}원</td>
-          <td class="p-3 text-right text-green-600 font-bold">${item.sat}점</td>
+          <td class="p-2 border-r border-purple-100 font-bold truncate max-w-[170px]" title="${item.context}">${idx+1}. ${item.context}</td>
+          <td class="p-2 border-r border-purple-100 text-purple-700 font-extrabold text-xs">${item.chosen}</td>
+          <td class="p-2 text-right border-r border-purple-100 text-red-600 text-xs">${item.cost.toLocaleString()}원</td>
+          <td class="p-2 text-right text-green-600 text-xs">${item.sat}점</td>
         `;
         tbody.appendChild(row);
       });
 
-      // 탐험 성향 지수 진단 텍스트 생성기
+      // 유형 진단
       const analysisEl = document.getElementById('resultAnalysisText');
-      // 가성비 효율 계산 공식: 만족도 대비 비용 소모율
-      const score = (accumulatedSatisfaction / accumulatedCost) * 10000; 
-      
-      let typeTitle = "";
-      let typeBody = "";
-      
-      if (accumulatedCost >= 250000 && accumulatedSatisfaction >= 400) {
-        typeTitle = "🌟 아낌없이 다 사는 '만족 극대화형' 탐험가";
-        typeBody = "비용이 조금 들더라도 자기가 가질 수 있는 만족을 최대치로 끌어올리는 성격이에요! 단, 돌발 변수로 인해 뒤늦게 큰 후회를 하거나 지갑이 텅 빌 수 있으니, 구매 전 한 번 더 '진짜 필요한가?' 고민하는 자세가 필요해요.";
-      } else if (accumulatedCost < 100000 && accumulatedSatisfaction < 300) {
-        typeTitle = "🛡️ 지갑을 단단히 닫는 '천하제일 자린고비형' 탐험가";
-        typeBody = "불필요한 지출을 극도로 아끼는 훌륭한 절약가형입니다! 하지만 너무 돈을 아끼는 데만 몰두하다가 내가 진짜 얻어야 할 기쁨이나 행복, 건강과 성장의 가치까지 다 놓쳐버린 것은 아닌지 돌아봐야 합니다.";
+      if (accumulatedCost < 100000 && accumulatedSatisfaction >= 900) {
+        analysisEl.innerHTML = "🏆 <strong>[천재적인 합리성 탐험가]</strong><br>쓸데없는 충동 지출이나 모방 소비에 단 한 번도 유혹당하지 않고, 가성비와 만족의 밸런스를 가장 똑똑하게 조율한 영웅형 탐험가입니다!";
+      } else if (accumulatedCost > 300000) {
+        analysisEl.innerHTML = "💸 <strong>[시원한 통큰 소비 탐험가]</strong><br>만족감은 높았지만 한순간의 모방(유행)과 호기심 때문에 지갑이 탈탈 비었어요! 소비하기 전에 보이지 않는 숨은 비용에 대해 좀 더 고민하는 자세를 길러봅시다.";
+      } else if (accumulatedSatisfaction < 200) {
+        analysisEl.innerHTML = "🌧️ <strong>[어설픈 짠돌이 탐험가]</strong><br>돈을 아끼려던 마음은 좋았지만, 품질과 뒤끝을 고민하지 않아 지갑도 잃고 속도 가득 상했네요! 다음번에는 비용 대비 성능을 꼼꼼하게 다시 비교해 봐요.";
       } else {
-        typeTitle = "⚖️ 가성비와 효율을 찾는 '스마트 벨런스형' 탐험가";
-        typeBody = "매우 현명합니다! 적절한 비용을 쓰면서도 돌발 이슈의 피해를 줄이고, 동시에 준수한 만족감을 지켜낸 균형감 있는 경제 꿈나무입니다. 일상생활에서도 이런 꼼꼼함과 균형 감각을 잘 살려보세요!";
+        analysisEl.innerHTML = "⚖️ <strong>[안정적인 균형 소비 탐험가]</strong><br>나의 지출 비용과 행복 만족감의 시소 위에서 똑똑하게 저울질할 줄 아는 현명한 학생이군요! 합리적 소비의 지혜를 온몸으로 이미 터득했습니다.";
       }
-      
-      analysisEl.innerHTML = `⚙️ <strong>분석 결과: [${typeTitle}]</strong><br>${typeBody}`;
     }
 
-    // --- [6] 클립보드 패들렛용 양식 복사 복사 프로세스 ---
-    function copyToClipboard() {
+    // --- HTML2CANVAS 모듈을 통한 이미지 변환 저장 ---
+    document.getElementById('btnDownload').addEventListener('click', () => {
       sound.click();
+      const target = document.getElementById('report-capture-area');
       
-      const r1 = document.getElementById('refRegret').value.trim();
-      const r2 = document.getElementById('refBest').value.trim();
-      const r3 = document.getElementById('refWill').value.trim();
-      
-      if (!r1 || !r2 || !r3) {
-        alert("💡 3가지 성찰 질문의 답변을 모두 적어주셔야 결과 보고서 복사가 가능해요!");
-        return;
-      }
-
-      // 복사 전용 텍스트 빌드
-      let reportText = `🏆 [합리적 선택 탐험대 2.0 결과 보고서] 🏆\n`;
-      reportText += `====================================\n`;
-      reportText += `🏫 학교: ${studentInfo.school}\n`;
-      reportText += `🎒 학급: ${studentInfo.grade}학년 ${studentInfo.classNum}반 ${studentInfo.number}번\n`;
-      reportText += `👤 이름: ${studentInfo.name}\n`;
-      reportText += `------------------------------------\n`;
-      reportText += `💰 총 지출한 비용: ${accumulatedCost.toLocaleString()}원\n`;
-      reportText += `❤️ 총 획득한 만족감: ${accumulatedSatisfaction}점\n`;
-      reportText += `====================================\n\n`;
-      reportText += `📝 [나의 탐험 세부 기록]\n`;
-      
-      chosenLog.forEach((item, idx) => {
-        reportText += `  └ ${idx+1}단계 선택: [${item.chosen}] ➔ 지출: ${item.cost.toLocaleString()}원 | 만족: ${item.sat}점\n`;
+      // 고해상도 고화질 이미지 전환 옵션 셋업
+      html2canvas(target, {
+        scale: 2, 
+        useCORS: true, 
+        backgroundColor: "#ffffff"
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = '나의_합리적선택_탐험보고서.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
       });
-      
-      reportText += `\n💭 [다람 대장과 함께하는 성찰 일지]\n`;
-      reportText += `1. 가장 후회되었던 아쉬운 선택과 이유:\n   ➔ ${r1}\n\n`;
-      reportText += `2. 가장 저렴하면서도 대만족을 준 최고의 선택:\n   ➔ ${r2}\n\n`;
-      reportText += `3. 일상생활에서 앞으로 실천할 합리적 소비 계획:\n   ➔ ${r3}\n`;
-      reportText += `====================================\n`;
-
-      navigator.clipboard.writeText(reportText).then(() => {
-        alert("🎉 결과 보고서가 복사되었습니다!\n학급 게시판(패들렛 등)에 가서 마우스 우클릭 후 '붙여넣기(Ctrl+V)'로 자랑해 보세요!");
-      }).catch(err => {
-        alert("복사 중 오류가 발생했습니다. 성찰 일지를 직접 블록 씌워 복사해 보세요.");
-      });
-    }
-
-    document.getElementById('btnCopyReport').addEventListener('click', copyToClipboard);
+    });
   </script>
+
 </body>
 </html>
