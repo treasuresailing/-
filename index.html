@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>합리적 선택 탐험대 (단독 실행형)</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=DungGeunMo&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Gaegu', sans-serif; font-size: 1.3rem; }
+    .pixel-font { font-family: 'DungGeunMo', sans-serif; }
+  </style>
+</head>
+<body class="bg-pink-50 min-h-screen flex flex-col items-center justify-center p-4">
+
+  <main id="mainContainer" class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border-4 border-pink-300 p-6 md:p-8">
+    
+    <div id="screenStart" class="text-center space-y-6">
+      <h1 class="text-4xl font-extrabold text-pink-600 drop-shadow">💎 합리적 선택 탐험대 💎</h1>
+      <div class="bg-white border-2 border-pink-200 p-4 rounded-2xl text-pink-900 font-bold">
+        "적은 비용으로 가장 큰 만족을 찾아라!"<br>
+        로그인 없이 바로 시작하는 사회 수업 도구
+      </div>
+      <div class="space-y-4 max-w-sm mx-auto">
+        <input type="text" id="stuName" placeholder="학년 반 번호 이름을 적어주세요" class="w-full px-4 py-3 rounded-xl border-2 border-pink-200 outline-none focus:border-pink-500">
+        <button onclick="startGame()" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-extrabold py-4 px-6 rounded-2xl shadow-lg transition-all text-2xl cursor-pointer">
+          게임 시작하기 🚀
+        </button>
+      </div>
+    </div>
+
+    <div id="screenPlay" class="hidden space-y-6">
+      <div class="flex justify-between items-center bg-pink-100 p-3 rounded-xl font-bold">
+        <span id="qCount">문제 1 / 6</span>
+        <span id="timer" class="text-red-500">⏱️ 10초</span>
+      </div>
+      <div class="text-center py-6 bg-gray-50 rounded-2xl border-2 border-gray-100">
+        <h2 id="qText" class="text-2xl font-extrabold text-gray-800">질문 내용</h2>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <button id="btnA" class="bg-white border-4 border-pink-400 p-6 rounded-2xl text-xl font-bold hover:bg-pink-50 transition-all cursor-pointer">
+          <span id="iconA" class="text-4xl block">🍜</span>
+          <span id="textA">선택 A</span>
+        </button>
+        <button id="btnB" class="bg-white border-4 border-purple-400 p-6 rounded-2xl text-xl font-bold hover:bg-purple-50 transition-all cursor-pointer">
+          <span id="iconB" class="text-4xl block">🔥</span>
+          <span id="textB">선택 B</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="screenIssue" class="hidden text-center space-y-6 animate-pulse">
+      <h2 class="text-3xl font-extrabold text-amber-500">🚨 돌발 상황 발생!</h2>
+      <div class="bg-amber-50 border-4 border-amber-200 p-6 rounded-2xl">
+        <p id="issueDesc" class="text-xl font-bold text-amber-900 mb-4">상황 설명</p>
+        <div class="flex justify-center gap-4 text-lg font-extrabold">
+          <span id="issueCost" class="text-red-600">비용 +0</span>
+          <span id="issueSat" class="text-blue-600">만족감 +0</span>
+        </div>
+      </div>
+      <button onclick="nextStep()" class="bg-gray-800 text-white px-8 py-3 rounded-xl font-bold cursor-pointer">확인</button>
+    </div>
+
+    <div id="screenResult" class="hidden space-y-6">
+      <h2 class="text-3xl font-extrabold text-center text-pink-600">🏁 탐험 완료 점수판</h2>
+      <div id="resultBox" class="bg-white border-2 border-gray-200 p-4 rounded-xl text-sm md:text-base whitespace-pre-wrap font-mono">
+        </div>
+      <div class="bg-pink-600 text-white p-4 rounded-2xl text-center">
+        <p class="font-bold">최종 비용: <span id="totalCost">0</span>원</p>
+        <p class="font-bold">최종 만족감: <span id="totalSat">0</span>점</p>
+      </div>
+      <div class="space-y-3">
+        <p class="font-bold text-gray-700">Q. 합리적 선택이란 무엇일까요?</p>
+        <textarea id="reflection" class="w-full border-2 border-pink-200 rounded-xl p-3 outline-none focus:border-pink-500" placeholder="자신의 생각을 적어주세요."></textarea>
+      </div>
+      <button onclick="copyToClipboard()" class="w-full bg-green-500 text-white font-bold py-4 rounded-xl text-xl cursor-pointer">
+        📋 결과 복사해서 선생님께 제출하기
+      </button>
+      <p class="text-center text-gray-500 text-sm">결과를 복사한 뒤 학급 게시판(패들렛 등)에 붙여넣으세요!</p>
+    </div>
+
+  </main>
+
+  <script>
+    // 게임 데이터 및 로직 (위에서 만든 6가지 상황 그대로 적용)
+    const quizData = [
+      { q: "오늘 저녁 메뉴는?", A:{n:"짜장면", i:"🍜", c:7000, s:100, is:"늦게 나옴", ec:0, es:-10}, B:{n:"짬뽕", i:"🔥", c:9000, s:120, is:"국물 튐", ec:2000, es:0} },
+      { q: "달콤한 간식은?", A:{n:"사탕", i:"🍬", c:1000, s:100, is:"머리에 붙음", ec:7000, es:0}, B:{n:"초콜릿", i:"🍫", c:2000, s:80, is:"치과 감", ec:15000, es:-10} },
+      { q: "좋아하는 계절은?", A:{n:"여름", i:"☀️", c:100000, s:-200, is:"배탈 남", ec:0, es:-50}, B:{n:"겨울", i:"❄️", c:100000, s:50, is:"여행 떠남", ec:0, es:100} },
+      { q: "가고 싶은 곳은?", A:{n:"산", i:"⛰️", c:0, s:100, is:"이슈 없음", ec:0, es:0}, B:{n:"바다", i:"🌊", c:0, s:150, is:"이슈 없음", ec:0, es:0} },
+      { q: "고장난 스케이트는?", A:{n:"고치기", i:"🔧", c:30000, s:100, is:"잘 나감", ec:0, es:100}, B:{n:"새것", i:"✨", c:50000, s:100, is:"뒤꿈치 까짐", ec:0, es:-150} },
+      { q: "영화 보는 곳은?", A:{n:"영화관", i:"🎬", c:15000, s:100, is:"무대인사", ec:0, es:200}, B:{n:"집", i:"🏠", c:0, s:100, is:"간식비 과다", ec:20000, es:0} }
+    ];
+
+    let currentIdx = 0, tCost = 0, tSat = 0, log = "", timer = null, timeLeft = 10;
+
+    function startGame() {
+      const name = document.getElementById('stuName').value;
+      if(!name) return alert("이름을 적어주세요!");
+      log = `[탐험가: ${name}]\n`;
+      document.getElementById('screenStart').classList.add('hidden');
+      document.getElementById('screenPlay').classList.remove('hidden');
+      loadQ();
+    }
+
+    function loadQ() {
+      if(currentIdx >= quizData.length) return showResult();
+      const data = quizData[currentIdx];
+      document.getElementById('qCount').innerText = `문제 ${currentIdx+1} / 6`;
+      document.getElementById('qText').innerText = data.q;
+      document.getElementById('textA').innerText = data.A.n;
+      document.getElementById('iconA').innerText = data.A.i;
+      document.getElementById('textB').innerText = data.B.n;
+      document.getElementById('iconB').innerText = data.B.i;
+      
+      document.getElementById('btnA').onclick = () => select('A');
+      document.getElementById('btnB').onclick = () => select('B');
+      
+      timeLeft = 10;
+      startTimer();
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      document.getElementById('timer').innerText = `⏱️ ${timeLeft}초`;
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').innerText = `⏱️ ${timeLeft}초`;
+        if(timeLeft <= 0) { clearInterval(timer); select('A'); }
+      }, 1000);
+    }
+
+    function select(type) {
+      clearInterval(timer);
+      const sel = quizData[currentIdx][type];
+      const cost = sel.c + sel.ec;
+      const sat = sel.s + sel.es;
+      tCost += cost; tSat += sat;
+      log += `${currentIdx+1}. ${sel.n} 선택 (최종비용:${cost.toLocaleString()} / 만족감:${sat})\n`;
+      
+      document.getElementById('issueDesc').innerText = sel.is;
+      document.getElementById('issueCost').innerText = `비용 +${sel.ec.toLocaleString()}`;
+      document.getElementById('issueSat').innerText = `만족감 ${sel.es >=0 ? '+':''}${sel.es}`;
+      
+      document.getElementById('screenPlay').classList.add('hidden');
+      document.getElementById('screenIssue').classList.remove('hidden');
+    }
+
+    function nextStep() {
+      document.getElementById('screenIssue').classList.add('hidden');
+      document.getElementById('screenPlay').classList.remove('hidden');
+      currentIdx++;
+      loadQ();
+    }
+
+    function showResult() {
+      document.getElementById('screenPlay').classList.add('hidden');
+      document.getElementById('screenResult').classList.remove('hidden');
+      document.getElementById('resultBox').innerText = log;
+      document.getElementById('totalCost').innerText = tCost.toLocaleString();
+      document.getElementById('totalSat').innerText = tSat;
+    }
+
+    function copyToClipboard() {
+      const ref = document.getElementById('reflection').value;
+      const finalMsg = `${log}\n[총 비용: ${tCost.toLocaleString()}원]\n[총 만족감: ${tSat}점]\n[생각]: ${ref}`;
+      navigator.clipboard.writeText(finalMsg).then(() => {
+        alert("결과가 복사되었습니다! 패들렛 등에 붙여넣기(Ctrl+V) 하세요.");
+      });
+    }
+  </script>
+</body>
+</html>
