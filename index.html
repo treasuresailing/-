@@ -1,410 +1,484 @@
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>합리적 소비 탐험대 3.0</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=DungGeunMo&display=swap" rel="stylesheet">
+<title>합리적 소비 탐험대 4.0</title>
 
 <style>
-
 body{
-    font-family:'Gaegu',sans-serif;
-    background:#eef2ff;
-    min-height:100vh;
-    margin:0;
-    padding:10px;
+font-family:'Malgun Gothic',sans-serif;
+background:#eef2ff;
+margin:0;
+padding:20px;
 }
 
-.pixel{
-    font-family:'DungGeunMo',monospace;
+.container{
+max-width:800px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:20px;
+box-shadow:0 0 15px rgba(0,0,0,0.15);
 }
 
-.card{
-    max-width:800px;
-    margin:auto;
-    background:white;
-    border-radius:30px;
-    padding:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,.15);
+h1,h2{
+text-align:center;
 }
 
-.choice-btn{
-    width:100%;
-    border:3px solid #c4b5fd;
-    border-radius:16px;
-    padding:18px;
-    font-size:1.1rem;
-    font-weight:700;
-    transition:.2s;
-    background:white;
+button{
+width:100%;
+padding:15px;
+margin-top:10px;
+border:none;
+border-radius:12px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
 }
 
-.choice-btn:hover{
-    transform:scale(1.02);
-    background:#f5f3ff;
+.choice{
+background:#f3f4f6;
+}
+
+.choice:hover{
+background:#ddd6fe;
+}
+
+.primary{
+background:#7c3aed;
+color:white;
 }
 
 .hidden{
-    display:none;
+display:none;
 }
 
-.result-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:10px;
+#result{
+line-height:1.8;
 }
 
-.result-table th{
-    background:#ede9fe;
-    border:1px solid #ddd;
-    padding:8px;
-    font-size:.85rem;
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
 }
 
-.result-table td{
-    border:1px solid #ddd;
-    padding:8px;
-    font-size:.85rem;
-    text-align:center;
+th,td{
+border:1px solid #ddd;
+padding:8px;
+text-align:center;
 }
 
-.grade-box{
-    padding:15px;
-    border-radius:16px;
-    margin-top:15px;
-    background:#f5f3ff;
-}
-
-.progress-wrap{
-    width:100%;
-    height:18px;
-    background:#e5e7eb;
-    border-radius:20px;
-    overflow:hidden;
-}
-
-.progress-bar{
-    height:100%;
-    width:0%;
-    background:linear-gradient(
-        90deg,
-        #8b5cf6,
-        #ec4899
-    );
-    transition:.3s;
+th{
+background:#ede9fe;
 }
 
 .badge{
-    display:inline-block;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:.8rem;
-    font-weight:700;
+display:inline-block;
+padding:6px 12px;
+border-radius:20px;
+background:#ede9fe;
+font-weight:bold;
+margin-bottom:10px;
 }
 
-.badge-rational{
-    background:#dcfce7;
-    color:#166534;
+.score{
+font-size:22px;
+font-weight:bold;
 }
 
-.badge-impulse{
-    background:#fee2e2;
-    color:#991b1b;
+textarea{
+width:100%;
+height:80px;
+margin-top:8px;
+padding:10px;
+border-radius:10px;
+border:1px solid #ccc;
 }
-
-.issue-box{
-    background:#fffbeb;
-    border:3px solid #fcd34d;
-    border-radius:20px;
-    padding:20px;
-}
-
-.start-box{
-    background:#f5f3ff;
-    padding:20px;
-    border-radius:20px;
-}
-
-.summary-box{
-    background:#eff6ff;
-    border-radius:15px;
-    padding:12px;
-    margin-top:12px;
-}
-
-@media(max-width:640px){
-
-.choice-btn{
-    font-size:1rem;
-    padding:14px;
-}
-
-.card{
-    padding:15px;
-}
-
-}
-
 </style>
 </head>
 
-  <body>
+<body>
 
-<main class="card">
+<div class="container">
 
-    <!-- 시작 화면 -->
-    <section id="screenStart">
+<div id="start">
 
-        <div class="text-center">
+<h1>💰 합리적 소비 탐험대 4.0</h1>
 
-            <h1 class="pixel text-4xl text-purple-600 mb-4">
-                합리적 소비 탐험대 3.0
-            </h1>
+<p style="text-align:center">
+8개의 소비 상황을 해결해 보세요.<br>
+비싼 소비가 항상 더 행복한 것은 아닙니다!
+</p>
 
-            <div class="start-box text-lg">
+<button class="primary" onclick="startGame()">게임 시작</button>
 
-                <p class="font-bold mb-3">
-                    💰 용돈을 현명하게 사용하는 방법을 배워보세요!
-                </p>
+</div>
 
-                <p>
-                    총 12개의 소비 상황이 제시됩니다.
-                </p>
+<div id="game" class="hidden">
 
-                <p>
-                    어떤 선택이 더 만족스럽고 합리적인지 생각하며 선택해보세요.
-                </p>
+<div id="tag" class="badge"></div>
 
-                <p class="mt-3 text-purple-700 font-bold">
-                    충동소비는 처음엔 즐겁지만
-                    예상치 못한 문제가 발생할 수 있습니다.
-                </p>
+<h2 id="question"></h2>
 
-            </div>
+<button id="btnA" class="choice"></button>
+<button id="btnB" class="choice"></button>
 
-            <div class="mt-5">
-                <label class="font-bold">
-                    학생 이름
-                </label>
+</div>
 
-                <input
-                    id="studentName"
-                    type="text"
-                    placeholder="이름 입력"
-                    class="w-full border-2 border-purple-300 rounded-xl p-3 mt-2 text-center"
-                >
-            </div>
+<div id="issue" class="hidden">
 
-            <button
-                onclick="startGame()"
-                class="w-full mt-6 bg-purple-600 text-white font-bold py-4 rounded-xl text-xl"
-            >
-                🚀 게임 시작하기
-            </button>
+<h2>🚨 돌발 상황</h2>
 
-        </div>
+<p id="issueText"></p>
 
-    </section>
+<p>
+추가 비용 :
+<span id="issueCost"></span>원
+</p>
 
-    <!-- 플레이 화면 -->
-    <section id="screenPlay" class="hidden">
+<p>
+만족도 변화 :
+<span id="issueSat"></span>점
+</p>
 
-        <div class="flex justify-between items-center mb-3">
-
-            <span id="questionNumber"
-                class="font-bold text-purple-700">
-                1 / 12
-            </span>
-
-            <span id="questionTag"
-                class="badge badge-rational">
-                합리소비
-            </span>
-
-        </div>
-
-        <div class="progress-wrap mb-4">
-            <div
-                id="progressBar"
-                class="progress-bar">
-            </div>
-        </div>
-
-        <div class="text-right text-red-600 font-bold mb-3">
-            <span id="timerText">
-                ⏱️ 45초
-            </span>
-        </div>
-
-        <h2
-            id="questionText"
-            class="text-2xl font-bold text-center mb-5">
-        </h2>
-
-        <div class="grid md:grid-cols-2 gap-4">
-
-            <button
-                id="btnA"
-                class="choice-btn">
-            </button>
-
-            <button
-                id="btnB"
-                class="choice-btn">
-            </button>
-
-        </div>
-
-        <div
-            id="thinkingMessage"
-            class="hidden text-center mt-5 text-red-500 font-bold">
-            💡 충분히 생각했다면 선택해 보세요.
-        </div>
-
-    </section>
-
-    <!-- 돌발상황 -->
-    <section id="screenIssue" class="hidden">
-
-        <div class="issue-box text-center">
-
-            <h2 class="text-3xl font-bold text-amber-600 mb-3">
-                🚨 돌발 상황 발생!
-            </h2>
-
-            <p
-                id="issueTitle"
-                class="text-xl font-bold mb-4">
-            </p>
-
-            <div class="grid md:grid-cols-2 gap-3 mb-4">
-
-                <div class="bg-red-100 rounded-xl p-3">
-                    <div class="font-bold">
-                        추가 비용
-                    </div>
-
-                    <div
-                        id="issueCost"
-                        class="text-red-600 text-xl">
-                    </div>
-                </div>
-
-                <div class="bg-blue-100 rounded-xl p-3">
-                    <div class="font-bold">
-                        만족도 변화
-                    </div>
-
-                    <div
-                        id="issueSat"
-                        class="text-blue-600 text-xl">
-                    </div>
-                </div>
-
-            </div>
-
-            <button
-                id="btnIssueConfirm"
-                class="bg-purple-600 text-white px-8 py-3 rounded-xl font-bold">
-                다음 문제 ▶
-            </button>
-
-        </div>
-
-    </section>
-
-    <!-- 결과 화면 -->
-    <section id="screenResult" class="hidden">
-
-        <div id="captureArea">
-
-            <h2 class="text-center text-3xl font-bold text-purple-700 mb-3">
-                📊 소비 결과 보고서
-            </h2>
-
-            <div class="summary-box">
-
-                <div class="font-bold">
-                    학생 이름 :
-                    <span id="resultName"></span>
-                </div>
-
-                <div class="mt-2">
-                    총 소비 금액 :
-                    <span
-                        id="finalCost"
-                        class="font-bold text-red-600">
-                    </span>
-                </div>
-
-                <div class="mt-2">
-                    총 만족도 :
-                    <span
-                        id="finalSat"
-                        class="font-bold text-blue-600">
-                    </span>
-                </div>
-
-            </div>
-
-            <div
-                id="gradeBox"
-                class="grade-box text-center">
-
-                <div
-                    id="finalGrade"
-                    class="text-2xl font-bold">
-                </div>
-
-                <div
-                    id="finalComment"
-                    class="mt-3 text-lg">
-                </div>
-
-            </div>
-
-            <table class="result-table">
-
-                <thead>
-
-                <tr>
-                    <th>번호</th>
-                    <th>선택</th>
-                    <th>비용</th>
-                    <th>만족도</th>
-                </tr>
-
-                </thead>
-
-                <tbody id="resultTableBody">
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-        <button
-            id="btnDownload"
-            class="w-full mt-5 bg-green-600 text-white py-4 rounded-xl font-bold text-lg">
-
-            📥 결과 이미지 저장
-
-        </button>
-
-        <button
-            onclick="location.reload()"
-            class="w-full mt-3 bg-gray-600 text-white py-4 rounded-xl font-bold">
-
-            🔄 다시 하기
-
-        </button>
-
-    </section>
-
-</main>
+<button class="primary" onclick="nextQuestion()">다음</button>
+
+</div>
+
+<div id="result" class="hidden">
+
+<h2>📊 결과 보고서</h2>
+
+<p>
+총 비용 :
+<span id="finalCost" class="score"></span>원
+</p>
+
+<p>
+총 만족도 :
+<span id="finalSat" class="score"></span>점
+</p>
+
+<h3 id="grade"></h3>
+
+<p id="comment"></p>
+
+<table>
+<thead>
+<tr>
+<th>번호</th>
+<th>선택</th>
+<th>비용</th>
+<th>만족도</th>
+</tr>
+</thead>
+<tbody id="history"></tbody>
+</table>
+
+<h3>✏️ 소비 성찰</h3>
+
+<p>내가 가장 잘한 소비는?</p>
+<textarea></textarea>
+
+<p>앞으로 실천하고 싶은 소비 습관은?</p>
+<textarea></textarea>
+
+<button class="primary" onclick="location.reload()">
+다시 하기
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const quiz = [
+
+{
+tag:"모방소비",
+q:"친구들이 새 필통을 샀다.",
+A:{
+n:"지금 필통 계속 사용",
+c:0,
+s:50,
+issue:"유행이 지나도 문제없이 사용했다.",
+ec:0,
+es:130
+},
+B:{
+n:"유행 필통 구매",
+c:35000,
+s:80,
+issue:"새로운 유행이 생겨 관심이 줄었다.",
+ec:0,
+es:-150
+}
+},
+
+{
+tag:"충동소비",
+q:"편의점에서 간식을 고른다.",
+A:{
+n:"먹을 만큼만 구매",
+c:2000,
+s:50,
+issue:"남기지 않고 다 먹었다.",
+ec:0,
+es:120
+},
+B:{
+n:"1+1이라 많이 구매",
+c:10000,
+s:80,
+issue:"먹지 못하고 버렸다.",
+ec:0,
+es:-120
+}
+},
+
+{
+tag:"과소비",
+q:"운동화를 산다.",
+A:{
+n:"실용적인 운동화",
+c:40000,
+s:60,
+issue:"오래 신을 수 있었다.",
+ec:0,
+es:130
+},
+B:{
+n:"한정판 운동화",
+c:150000,
+s:90,
+issue:"금방 관심이 줄었다.",
+ec:0,
+es:-170
+}
+},
+
+{
+tag:"충동소비",
+q:"게임을 한다.",
+A:{
+n:"무료로 즐긴다",
+c:0,
+s:40,
+issue:"친구와 즐겁게 놀았다.",
+ec:0,
+es:120
+},
+B:{
+n:"아이템 구매",
+c:50000,
+s:80,
+issue:"곧 더 좋은 아이템이 나왔다.",
+ec:0,
+es:-130
+}
+},
+
+{
+tag:"합리소비",
+q:"휴대폰 케이스를 고른다.",
+A:{
+n:"튼튼한 제품",
+c:15000,
+s:60,
+issue:"오래 사용할 수 있었다.",
+ec:0,
+es:140
+},
+B:{
+n:"비싼 캐릭터 제품",
+c:50000,
+s:80,
+issue:"금방 질렸다.",
+ec:0,
+es:-120
+}
+},
+
+{
+tag:"합리소비",
+q:"용돈을 받았다.",
+A:{
+n:"절반 저금",
+c:10000,
+s:50,
+issue:"필요할 때 사용할 수 있었다.",
+ec:0,
+es:150
+},
+B:{
+n:"바로 사용",
+c:50000,
+s:80,
+issue:"사고 싶은 것이 또 생겼다.",
+ec:0,
+es:-140
+}
+},
+
+{
+tag:"충동소비",
+q:"목이 마르다.",
+A:{
+n:"물 마시기",
+c:1000,
+s:40,
+issue:"갈증이 해소되었다.",
+ec:0,
+es:120
+},
+B:{
+n:"비싼 음료 구매",
+c:7000,
+s:80,
+issue:"금방 다 마셨다.",
+ec:0,
+es:-90
+}
+},
+
+{
+tag:"과소비",
+q:"생일 용돈을 사용한다.",
+A:{
+n:"필요한 물건 구매",
+c:30000,
+s:60,
+issue:"계속 만족하며 사용했다.",
+ec:0,
+es:140
+},
+B:{
+n:"유행 상품 구매",
+c:200000,
+s:90,
+issue:"곧 관심이 사라졌다.",
+ec:0,
+es:-180
+}
+}
+
+];
+
+let idx=0;
+let totalCost=0;
+let totalSat=0;
+let current=null;
+let history=[];
+
+function startGame(){
+document.getElementById("start").classList.add("hidden");
+document.getElementById("game").classList.remove("hidden");
+loadQuestion();
+}
+
+function loadQuestion(){
+
+const q=quiz[idx];
+
+document.getElementById("tag").innerText=q.tag;
+document.getElementById("question").innerText=q.q;
+
+document.getElementById("btnA").innerText=q.A.n;
+document.getElementById("btnB").innerText=q.B.n;
+
+document.getElementById("btnA").onclick=()=>choose(q.A);
+document.getElementById("btnB").onclick=()=>choose(q.B);
+}
+
+function choose(choice){
+
+current=choice;
+
+totalCost += choice.c + choice.ec;
+totalSat += choice.s + choice.es;
+
+history.push({
+name:choice.n,
+cost:choice.c+choice.ec,
+sat:choice.s+choice.es
+});
+
+document.getElementById("game").classList.add("hidden");
+document.getElementById("issue").classList.remove("hidden");
+
+document.getElementById("issueText").innerText=choice.issue;
+document.getElementById("issueCost").innerText=choice.ec;
+document.getElementById("issueSat").innerText=choice.es;
+}
+
+function nextQuestion(){
+
+idx++;
+
+document.getElementById("issue").classList.add("hidden");
+
+if(idx>=quiz.length){
+showResult();
+return;
+}
+
+document.getElementById("game").classList.remove("hidden");
+loadQuestion();
+}
+
+function showResult(){
+
+document.getElementById("result").classList.remove("hidden");
+
+document.getElementById("finalCost").innerText=
+totalCost.toLocaleString();
+
+document.getElementById("finalSat").innerText=
+totalSat;
+
+let grade="";
+let comment="";
+
+if(totalSat>=100 && totalCost<=200000){
+grade="🏆 소비 마스터";
+comment="적은 비용으로 높은 만족을 얻었습니다.";
+}
+else if(totalSat>=50){
+grade="🥇 합리적 소비왕";
+comment="대체로 현명한 소비를 했습니다.";
+}
+else if(totalSat>=0){
+grade="⚠️ 소비 습관 점검";
+comment="조금 더 계획적인 소비가 필요합니다.";
+}
+else{
+grade="🚨 충동소비 위험";
+comment="순간의 즐거움 때문에 많은 비용을 사용했습니다.";
+}
+
+document.getElementById("grade").innerText=grade;
+document.getElementById("comment").innerText=comment;
+
+const tbody=document.getElementById("history");
+
+history.forEach((h,i)=>{
+tbody.innerHTML += `
+<tr>
+<td>${i+1}</td>
+<td>${h.name}</td>
+<td>${h.cost.toLocaleString()}</td>
+<td>${h.sat}</td>
+</tr>
+`;
+});
+}
+
+</script>
+
+</body>
+</html>
+```
