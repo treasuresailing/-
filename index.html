@@ -1,484 +1,218 @@
-```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>합리적 소비 탐험대 4.0</title>
-
-<style>
-body{
-font-family:'Malgun Gothic',sans-serif;
-background:#eef2ff;
-margin:0;
-padding:20px;
-}
-
-.container{
-max-width:800px;
-margin:auto;
-background:white;
-padding:25px;
-border-radius:20px;
-box-shadow:0 0 15px rgba(0,0,0,0.15);
-}
-
-h1,h2{
-text-align:center;
-}
-
-button{
-width:100%;
-padding:15px;
-margin-top:10px;
-border:none;
-border-radius:12px;
-font-size:16px;
-font-weight:bold;
-cursor:pointer;
-}
-
-.choice{
-background:#f3f4f6;
-}
-
-.choice:hover{
-background:#ddd6fe;
-}
-
-.primary{
-background:#7c3aed;
-color:white;
-}
-
-.hidden{
-display:none;
-}
-
-#result{
-line-height:1.8;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:15px;
-}
-
-th,td{
-border:1px solid #ddd;
-padding:8px;
-text-align:center;
-}
-
-th{
-background:#ede9fe;
-}
-
-.badge{
-display:inline-block;
-padding:6px 12px;
-border-radius:20px;
-background:#ede9fe;
-font-weight:bold;
-margin-bottom:10px;
-}
-
-.score{
-font-size:22px;
-font-weight:bold;
-}
-
-textarea{
-width:100%;
-height:80px;
-margin-top:8px;
-padding:10px;
-border-radius:10px;
-border:1px solid #ccc;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>합리적 선택 탐험대 2.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Gaegu', sans-serif; font-size: 1.15rem; background-color: #f8fafc; }
+    .compact-table th, .compact-table td { 
+      padding: 3px 6px; 
+      font-size: 0.75rem; 
+      line-height: 1.1; 
+      border: 1px solid #e2e8f0;
+      text-align: center;
+    }
+    #report-capture-area { background: white; padding: 15px; border-radius: 15px; }
+    .timer-warn { color: #ef4444; font-weight: bold; animation: blink 1s infinite; }
+    @keyframes blink { 50% { opacity: 0.5; } }
+  </style>
 </head>
-
-<body>
-
-<div class="container">
-
-<div id="start">
-
-<h1>💰 합리적 소비 탐험대 4.0</h1>
-
-<p style="text-align:center">
-8개의 소비 상황을 해결해 보세요.<br>
-비싼 소비가 항상 더 행복한 것은 아닙니다!
-</p>
-
-<button class="primary" onclick="startGame()">게임 시작</button>
-
-</div>
-
-<div id="game" class="hidden">
-
-<div id="tag" class="badge"></div>
-
-<h2 id="question"></h2>
-
-<button id="btnA" class="choice"></button>
-<button id="btnB" class="choice"></button>
-
-</div>
-
-<div id="issue" class="hidden">
-
-<h2>🚨 돌발 상황</h2>
-
-<p id="issueText"></p>
-
-<p>
-추가 비용 :
-<span id="issueCost"></span>원
-</p>
-
-<p>
-만족도 변화 :
-<span id="issueSat"></span>점
-</p>
-
-<button class="primary" onclick="nextQuestion()">다음</button>
-
-</div>
-
-<div id="result" class="hidden">
-
-<h2>📊 결과 보고서</h2>
-
-<p>
-총 비용 :
-<span id="finalCost" class="score"></span>원
-</p>
-
-<p>
-총 만족도 :
-<span id="finalSat" class="score"></span>점
-</p>
-
-<h3 id="grade"></h3>
-
-<p id="comment"></p>
-
-<table>
-<thead>
-<tr>
-<th>번호</th>
-<th>선택</th>
-<th>비용</th>
-<th>만족도</th>
-</tr>
-</thead>
-<tbody id="history"></tbody>
-</table>
-
-<h3>✏️ 소비 성찰</h3>
-
-<p>내가 가장 잘한 소비는?</p>
-<textarea></textarea>
-
-<p>앞으로 실천하고 싶은 소비 습관은?</p>
-<textarea></textarea>
-
-<button class="primary" onclick="location.reload()">
-다시 하기
-</button>
-
-</div>
-
-</div>
-
-<script>
-
-const quiz = [
-
-{
-tag:"모방소비",
-q:"친구들이 새 필통을 샀다.",
-A:{
-n:"지금 필통 계속 사용",
-c:0,
-s:50,
-issue:"유행이 지나도 문제없이 사용했다.",
-ec:0,
-es:130
-},
-B:{
-n:"유행 필통 구매",
-c:35000,
-s:80,
-issue:"새로운 유행이 생겨 관심이 줄었다.",
-ec:0,
-es:-150
-}
-},
-
-{
-tag:"충동소비",
-q:"편의점에서 간식을 고른다.",
-A:{
-n:"먹을 만큼만 구매",
-c:2000,
-s:50,
-issue:"남기지 않고 다 먹었다.",
-ec:0,
-es:120
-},
-B:{
-n:"1+1이라 많이 구매",
-c:10000,
-s:80,
-issue:"먹지 못하고 버렸다.",
-ec:0,
-es:-120
-}
-},
-
-{
-tag:"과소비",
-q:"운동화를 산다.",
-A:{
-n:"실용적인 운동화",
-c:40000,
-s:60,
-issue:"오래 신을 수 있었다.",
-ec:0,
-es:130
-},
-B:{
-n:"한정판 운동화",
-c:150000,
-s:90,
-issue:"금방 관심이 줄었다.",
-ec:0,
-es:-170
-}
-},
-
-{
-tag:"충동소비",
-q:"게임을 한다.",
-A:{
-n:"무료로 즐긴다",
-c:0,
-s:40,
-issue:"친구와 즐겁게 놀았다.",
-ec:0,
-es:120
-},
-B:{
-n:"아이템 구매",
-c:50000,
-s:80,
-issue:"곧 더 좋은 아이템이 나왔다.",
-ec:0,
-es:-130
-}
-},
-
-{
-tag:"합리소비",
-q:"휴대폰 케이스를 고른다.",
-A:{
-n:"튼튼한 제품",
-c:15000,
-s:60,
-issue:"오래 사용할 수 있었다.",
-ec:0,
-es:140
-},
-B:{
-n:"비싼 캐릭터 제품",
-c:50000,
-s:80,
-issue:"금방 질렸다.",
-ec:0,
-es:-120
-}
-},
-
-{
-tag:"합리소비",
-q:"용돈을 받았다.",
-A:{
-n:"절반 저금",
-c:10000,
-s:50,
-issue:"필요할 때 사용할 수 있었다.",
-ec:0,
-es:150
-},
-B:{
-n:"바로 사용",
-c:50000,
-s:80,
-issue:"사고 싶은 것이 또 생겼다.",
-ec:0,
-es:-140
-}
-},
-
-{
-tag:"충동소비",
-q:"목이 마르다.",
-A:{
-n:"물 마시기",
-c:1000,
-s:40,
-issue:"갈증이 해소되었다.",
-ec:0,
-es:120
-},
-B:{
-n:"비싼 음료 구매",
-c:7000,
-s:80,
-issue:"금방 다 마셨다.",
-ec:0,
-es:-90
-}
-},
-
-{
-tag:"과소비",
-q:"생일 용돈을 사용한다.",
-A:{
-n:"필요한 물건 구매",
-c:30000,
-s:60,
-issue:"계속 만족하며 사용했다.",
-ec:0,
-es:140
-},
-B:{
-n:"유행 상품 구매",
-c:200000,
-s:90,
-issue:"곧 관심이 사라졌다.",
-ec:0,
-es:-180
-}
-}
-
-];
-
-let idx=0;
-let totalCost=0;
-let totalSat=0;
-let current=null;
-let history=[];
-
-function startGame(){
-document.getElementById("start").classList.add("hidden");
-document.getElementById("game").classList.remove("hidden");
-loadQuestion();
-}
-
-function loadQuestion(){
-
-const q=quiz[idx];
-
-document.getElementById("tag").innerText=q.tag;
-document.getElementById("question").innerText=q.q;
-
-document.getElementById("btnA").innerText=q.A.n;
-document.getElementById("btnB").innerText=q.B.n;
-
-document.getElementById("btnA").onclick=()=>choose(q.A);
-document.getElementById("btnB").onclick=()=>choose(q.B);
-}
-
-function choose(choice){
-
-current=choice;
-
-totalCost += choice.c + choice.ec;
-totalSat += choice.s + choice.es;
-
-history.push({
-name:choice.n,
-cost:choice.c+choice.ec,
-sat:choice.s+choice.es
-});
-
-document.getElementById("game").classList.add("hidden");
-document.getElementById("issue").classList.remove("hidden");
-
-document.getElementById("issueText").innerText=choice.issue;
-document.getElementById("issueCost").innerText=choice.ec;
-document.getElementById("issueSat").innerText=choice.es;
-}
-
-function nextQuestion(){
-
-idx++;
-
-document.getElementById("issue").classList.add("hidden");
-
-if(idx>=quiz.length){
-showResult();
-return;
-}
-
-document.getElementById("game").classList.remove("hidden");
-loadQuestion();
-}
-
-function showResult(){
-
-document.getElementById("result").classList.remove("hidden");
-
-document.getElementById("finalCost").innerText=
-totalCost.toLocaleString();
-
-document.getElementById("finalSat").innerText=
-totalSat;
-
-let grade="";
-let comment="";
-
-if(totalSat>=100 && totalCost<=200000){
-grade="🏆 소비 마스터";
-comment="적은 비용으로 높은 만족을 얻었습니다.";
-}
-else if(totalSat>=50){
-grade="🥇 합리적 소비왕";
-comment="대체로 현명한 소비를 했습니다.";
-}
-else if(totalSat>=0){
-grade="⚠️ 소비 습관 점검";
-comment="조금 더 계획적인 소비가 필요합니다.";
-}
-else{
-grade="🚨 충동소비 위험";
-comment="순간의 즐거움 때문에 많은 비용을 사용했습니다.";
-}
-
-document.getElementById("grade").innerText=grade;
-document.getElementById("comment").innerText=comment;
-
-const tbody=document.getElementById("history");
-
-history.forEach((h,i)=>{
-tbody.innerHTML += `
-<tr>
-<td>${i+1}</td>
-<td>${h.name}</td>
-<td>${h.cost.toLocaleString()}</td>
-<td>${h.sat}</td>
-</tr>
-`;
-});
-}
-
-</script>
-
+<body class="min-h-screen flex flex-col items-center justify-center p-2">
+
+  <main id="gameWrapper" class="w-full max-w-xl bg-white rounded-3xl shadow-2xl border-4 border-purple-300 p-5 relative overflow-hidden">
+    
+    <div id="screenStart" class="text-center py-6">
+      <div class="text-5xl mb-4">🐿️</div>
+      <h1 class="text-4xl font-extrabold text-purple-600 mb-4">합리적 선택 탐험대 2.0</h1>
+      <p class="bg-blue-50 p-5 rounded-2xl text-blue-900 font-bold mb-6 leading-relaxed">
+        안녕! 12번의 선택 미션에 온 걸 환영해.<br>
+        돈을 많이 쓴다고 꼭 행복(만족도)이 높은 건 아니야.<br>
+        <span class="text-pink-600 underline">제한된 돈으로 최고의 만족</span>을 찾아보자!
+      </p>
+      <button onclick="startGame()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-extrabold py-4 rounded-2xl shadow-xl text-2xl transform active:scale-95 transition-all">탐험 시작하기 🧭</button>
+    </div>
+
+    <div id="screenPlay" class="hidden space-y-4">
+      <div class="flex justify-between items-center text-sm font-bold">
+        <span id="playProgress" class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full">미션 1 / 12</span>
+        <span id="timerText" class="bg-slate-100 px-3 py-1 rounded-full">⏱️ 생각 시간: 45초</span>
+      </div>
+      
+      <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+        <div id="progressBar" class="bg-purple-500 h-full transition-all duration-500" style="width: 8.3%"></div>
+      </div>
+
+      <div class="text-center py-6 bg-pink-50 rounded-2xl border-2 border-pink-100">
+        <p id="qTag" class="text-xs font-bold text-pink-500 mb-1">분류</p>
+        <h2 id="questionText" class="text-xl font-extrabold text-gray-800 px-4">질문 내용</h2>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3">
+        <button id="btnA" class="bg-white hover:bg-indigo-50 border-4 border-indigo-200 p-4 rounded-2xl shadow-md transition-all flex flex-col items-center group">
+          <span class="text-lg font-extrabold text-indigo-700" id="textA">선택 A</span>
+        </button>
+        <button id="btnB" class="bg-white hover:bg-rose-50 border-4 border-rose-200 p-4 rounded-2xl shadow-md transition-all flex flex-col items-center group">
+          <span class="text-lg font-extrabold text-rose-700" id="textB">선택 B</span>
+        </button>
+      </div>
+
+      <p id="waitMsg" class="hidden text-center text-red-500 font-bold text-sm bg-red-50 py-2 rounded-xl border border-red-100">
+        💡 숙고 시간이 끝났습니다. 충분히 고민했다면 선택지를 눌러주세요!
+      </p>
+    </div>
+
+    <div id="screenIssue" class="hidden text-center space-y-5 py-4">
+      <h2 class="text-2xl font-extrabold text-amber-600">✨ 선택 결과 ✨</h2>
+      <div class="bg-amber-50 border-4 border-amber-200 p-6 rounded-3xl shadow-inner relative">
+        <div class="absolute -top-6 left-1/2 -translate-x-1/2 text-4xl">🐿️</div>
+        <p id="issueDescription" class="text-lg font-bold text-amber-900 leading-relaxed mb-4 pt-2">피드백</p>
+        <div class="flex justify-center gap-4">
+          <div id="issueCostBox" class="text-red-600 bg-white px-4 py-1 rounded-lg shadow font-bold text-sm">비용</div>
+          <div id="issueSatBox" class="text-blue-600 bg-white px-4 py-1 rounded-lg shadow font-bold text-sm">만족도</div>
+        </div>
+      </div>
+      <button id="btnConfirm" class="bg-slate-800 text-white font-extrabold py-3 px-12 rounded-xl shadow-lg text-lg transform active:scale-95 transition-all">다음으로 ➡️</button>
+    </div>
+
+    <div id="screenResult" class="hidden space-y-4">
+      <div id="report-capture-area">
+        <h2 class="text-2xl font-extrabold text-center text-purple-700 mb-3 tracking-tighter">🏁 나의 합리적 선택 성찰 보고서 🏁</h2>
+        
+        <table class="compact-table w-full bg-white mb-3">
+          <thead class="bg-slate-100 font-bold text-slate-700">
+            <tr><th>번호</th><th>선택한 물건</th><th>지불 비용</th><th>만족도</th></tr>
+          </thead>
+          <tbody id="resultTableBody"></tbody>
+        </table>
+
+        <div class="grid grid-cols-2 gap-2 text-center font-extrabold mb-3">
+          <div class="bg-rose-500 text-white p-2 rounded-xl">
+            <p class="text-[10px] opacity-80">총 지불 비용</p>
+            <p id="resCost" class="text-lg">0원</p>
+          </div>
+          <div class="bg-emerald-500 text-white p-2 rounded-xl">
+            <p class="text-[10px] opacity-80">최종 만족감</p>
+            <p id="resSat" class="text-lg">0점</p>
+          </div>
+        </div>
+
+        <div class="bg-indigo-50 border-2 border-indigo-200 p-3 rounded-xl text-sm">
+          <p id="resAnalysis" class="text-indigo-900 leading-snug font-bold"></p>
+        </div>
+      </div>
+
+      <button id="btnDownload" class="w-full bg-green-500 hover:bg-green-600 text-white font-extrabold py-4 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-xl cursor-pointer">
+        📥 보고서 이미지 저장하기
+      </button>
+      <p class="text-center text-xs text-pink-600 font-bold animate-bounce">저장된 이미지를 패들렛에 올려 친구들과 공유하세요! 📸</p>
+    </div>
+
+  </main>
+
+  <script>
+    let currentIdx = 0, tCost = 0, tSat = 0, timer = null, timeLeft = 45, choices = [];
+
+    // 밸런스 조정된 12문항 (A: 합리적, B: 비합리적)
+    const quizData = [
+      { q:"학원 가기 전 저녁 메뉴", tag:"[만족소비]", A:{n:"짜장면",c:7000,s:10,f:"가성비 최고! 든든하게 먹고 공부했어요.",ec:0,es:0}, B:{n:"호텔 뷔페",c:50000,s:15,f:"너무 비쌌지만 배가 불러서 공부가 안 됐어요.",ec:0,es:-13} },
+      { q:"필요한 연필 사기", tag:"[합리소비]", A:{n:"기본 연필",c:1000,s:8,f:"필기감이 좋고 튼튼해요.",ec:0,es:0}, B:{n:"유행하는 샤프",c:12000,s:10,f:"유행이 금방 지나고 심이 자꾸 부러져요.",ec:0,es:-9} },
+      { q:"체육 시간 운동화", tag:"[과소비]", A:{n:"국산 운동화",c:35000,s:12,f:"발이 정말 편해서 달리기 1등 했어요!",ec:0,es:0}, B:{n:"한정판 신발",c:150000,s:15,f:"신발 더러워질까 봐 제대로 못 뛰었어요.",ec:0,es:-14} },
+      { q:"편의점 과자 행사", tag:"[충동소비]", A:{n:"1봉지만 구매",c:1500,s:7,f:"딱 적당히 맛있게 먹었어요.",ec:0,es:0}, B:{n:"2+1 묶음",c:4500,s:9,f:"남아서 눅눅해지고 유통기한이 지났어요.",ec:0,es:-7} },
+      { q:"고장난 가방", tag:"[합리소비]", A:{n:"수선해서 쓰기",c:5000,s:10,f:"환경도 지키고 가방도 깨끗해졌어요.",ec:0,es:0}, B:{n:"브랜드 가방",c:65000,s:14,f:"부모님께 무리한 부탁을 해서 마음이 무거워요.",ec:0,es:-12} },
+      { q:"영화 관람", tag:"[만족소비]", A:{n:"영화관 관람",c:15000,s:10,f:"큰 화면으로 보니 감동이 두 배!",ec:0,es:0}, B:{n:"프리미엄관",c:45000,s:15,f:"비싼 값만큼 특별한 건 없었어요.",ec:0,es:-13} },
+      { q:"부모님 생신 선물", tag:"[만족소비]", A:{n:"정성 어린 편지",c:500,s:15,f:"부모님이 감동하셔서 눈물을 흘리셨어요.",ec:0,es:0}, B:{n:"비싼 꽃바구니",c:55000,s:12,f:"꽃이 금방 시들어 아까워하셨어요.",ec:0,es:-10} },
+      { q:"친구들과 마실 음료", tag:"[모방소비]", A:{n:"건강한 생수",c:800,s:6,f:"갈증이 싹 풀리고 몸도 가벼워요.",ec:0,es:0}, B:{n:"비싼 버블티",c:7000,s:10,f:"친구가 사길래 따라 샀는데 너무 달아요.",ec:0,es:-8} },
+      { q:"모바일 게임 아이템", tag:"[충동소비]", A:{n:"참고 안 사기",c:0,s:5,f:"내 실력으로 게임을 즐겨서 뿌듯해요.",ec:0,es:0}, B:{n:"한정판 스킨",c:33000,s:12,f:"반짝거릴 때만 좋았지, 실력은 그대로예요.",ec:0,es:-11} },
+      { q:"여름방학 더위", tag:"[과소비]", A:{n:"부채와 선풍기",c:5000,s:5,f:"건강하고 시원하게 여름을 보냈어요.",ec:0,es:0}, B:{n:"에어컨 풀가동",c:80000,s:15,f:"전기요금이 너무 많이 나와 혼났어요.",ec:0,es:-12} },
+      { q:"주말 나들이", tag:"[만족소비]", A:{n:"근처 공원 산책",c:0,s:10,f:"가족과 대화하며 즐거운 시간이었어요.",ec:0,es:0}, B:{n:"멀리 테마파크",c:150000,s:20,f:"사람이 너무 많아 줄 서다가 지쳤어요.",ec:0,es:-17} },
+      { q:"자기 전 독서", tag:"[합리소비]", A:{n:"도서관 빌리기",c:0,s:9,f:"다양한 책을 공짜로 읽어 똑똑해졌어요.",ec:0,es:0}, B:{n:"전집 세트 구매",c:220000,s:15,f:"안 읽고 쌓여있는 책이 절반이 넘어요.",ec:0,es:-14} }
+    ];
+
+    function startGame() {
+      document.getElementById('screenStart').classList.add('hidden');
+      document.getElementById('screenPlay').classList.remove('hidden');
+      loadQ();
+    }
+
+    function loadQ() {
+      if(currentIdx >= quizData.length) return showResult();
+      const d = quizData[currentIdx];
+      document.getElementById('playProgress').innerText = `미션 ${currentIdx+1} / 12`;
+      document.getElementById('progressBar').style.width = `${((currentIdx+1)/12)*100}%`;
+      document.getElementById('qTag').innerText = d.tag;
+      document.getElementById('questionText').innerText = d.q;
+      document.getElementById('textA').innerText = d.A.n + " (" + d.A.c.toLocaleString() + "원)";
+      document.getElementById('textB').innerText = d.B.n + " (" + d.B.c.toLocaleString() + "원)";
+      
+      timeLeft = 45;
+      document.getElementById('waitMsg').classList.add('hidden');
+      document.getElementById('timerText').classList.remove('timer-warn');
+      if(timer) clearInterval(timer);
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timerText').innerText = `⏱️ 생각 시간: ${timeLeft}초`;
+        if(timeLeft <= 10) document.getElementById('timerText').classList.add('timer-warn');
+        if(timeLeft <= 0) { clearInterval(timer); document.getElementById('waitMsg').classList.remove('hidden'); }
+      }, 1000);
+
+      document.getElementById('btnA').onclick = () => select('A');
+      document.getElementById('btnB').onclick = () => select('B');
+    }
+
+    function select(type) {
+      clearInterval(timer);
+      const d = quizData[currentIdx][type];
+      const finalC = d.c + d.ec, finalS = d.s + d.es;
+      tCost += finalC; tSat += finalS;
+      choices.push({ n: d.n, c: finalC, s: finalS });
+
+      document.getElementById('issueDescription').innerText = d.f;
+      document.getElementById('issueCostBox').innerText = `비용 +${finalC.toLocaleString()}원`;
+      document.getElementById('issueSatBox').innerText = `만족감 ${finalS > 0 ? '+' : ''}${finalS}점`;
+      
+      document.getElementById('screenPlay').classList.add('hidden');
+      document.getElementById('screenIssue').classList.remove('hidden');
+      document.getElementById('btnConfirm').onclick = () => {
+        currentIdx++;
+        document.getElementById('screenIssue').classList.add('hidden');
+        document.getElementById('screenPlay').classList.remove('hidden');
+        loadQ();
+      };
+    }
+
+    function showResult() {
+      document.getElementById('screenPlay').classList.add('hidden');
+      document.getElementById('screenResult').classList.remove('hidden');
+      document.getElementById('resCost').innerText = tCost.toLocaleString();
+      document.getElementById('resSat').innerText = tSat;
+
+      const tbody = document.getElementById('resultTableBody');
+      choices.forEach((c, i) => {
+        tbody.innerHTML += `<tr><td>${i+1}</td><td>${c.n}</td><td>${c.c.toLocaleString()}원</td><td>${c.s}점</td></tr>`;
+      });
+
+      const ana = document.getElementById('resAnalysis');
+      if (tCost < 120000 && tSat >= 90) {
+        ana.innerHTML = "🏆 [합리적 탐험의 달인]<br>정말 대단해요! 비용은 10만 원 정도로 아끼면서 만족도는 100점에 가깝게 챙겼군요. 최고의 경제 감각을 가졌습니다!";
+      } else if (tCost > 250000) {
+        ana.innerHTML = "💸 [텅장 주의보: 과소비 탐험가]<br>지갑이 텅 비어버렸어요! 돈은 30만 원이나 썼지만 만족감은 30점도 안 되네요. 비싼 것이 항상 좋은 건 아니라는 걸 배웠나요?";
+      } else {
+        ana.innerHTML = "⚖️ [노력하는 균형 탐험가]<br>적절한 선택을 하려 노력했군요! 하지만 몇몇 선택에서 유행이나 충동에 휩쓸려 만족도가 깎인 부분이 보여요. 표를 보고 다시 생각해보세요.";
+      }
+    }
+
+    document.getElementById('btnDownload').onclick = () => {
+      html2canvas(document.getElementById('report-capture-area')).then(canvas => {
+        const link = document.createElement('a');
+        link.download = '합리적선택_보고서.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    };
+  </script>
 </body>
 </html>
 ```
